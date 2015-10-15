@@ -19,12 +19,25 @@ void Engine::start()
 
     //start main loop
     mainLoop();
+
+    //clean up terminal before exit
+    clear();
+    refresh();
 }
 
 bool Engine::initCurses()
 {
     //init main curses
     initscr();
+
+    //enable other keys
+    keypad(stdscr, TRUE);
+
+    //disable cursor
+    curs_set(0);
+
+    //disable echoing of keys
+    noecho();
 
     return true;
 }
@@ -45,7 +58,7 @@ void Engine::mainLoop()
         k = getch();
 
         //escape key
-
+        if(k == 27) quit = true;
 
     }
 }
