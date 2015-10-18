@@ -2,6 +2,7 @@
 #define CLASS_ENGINE
 
 #include "curses.h"
+#include "tinyxml2.h"
 
 class Engine
 {

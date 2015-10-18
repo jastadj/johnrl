@@ -1,5 +1,10 @@
 #include "engine.hpp"
 
+//debug
+#include <iostream>
+#include <string>
+
+
 Engine::Engine()
 {
 
@@ -14,7 +19,29 @@ void Engine::start()
 {
 
     //init curses
-    initCurses();
+    //initCurses();
+
+    //xml parse testing
+    tinyxml2::XMLDocument doc;
+    doc.LoadFile("dream.xml");
+
+
+    tinyxml2::XMLElement *myelement;
+    myelement = doc.FirstChildElement("PLAY");
+    if(myelement != NULL)
+    {
+        if(myelement->FirstChild()->Value() != NULL)
+        {
+            std::cout << myelement->FirstChild()->Value() << std::endl;
+            if(myelement->FirstChild()->FirstChild() != NULL)
+            {
+                std::cout << myelement->FirstChild()->FirstChild()->Value() << std::endl;
+            }
+        }
+    }
+
+
+    return;
 
 
     //start main loop
