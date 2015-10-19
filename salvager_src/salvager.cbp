@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="salvager" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/salvager" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+			</Target>
+			<Target title="Release">
+				<Option output="bin/Release/salvager" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add directory="../../curses/include" />
+		</Compiler>
+		<Linker>
+			<Add library="pdcurses" />
+			<Add directory="../../curses/lib" />
+		</Linker>
+		<Unit filename="camera.cpp" />
+		<Unit filename="camera.hpp" />
+		<Unit filename="colors.hpp" />
+		<Unit filename="item.cpp" />
+		<Unit filename="item.hpp" />
+		<Unit filename="main.cpp" />
+		<Unit filename="map.cpp" />
+		<Unit filename="map.hpp" />
+		<Unit filename="maptile.cpp" />
+		<Unit filename="maptile.hpp" />
+		<Unit filename="mob.cpp" />
+		<Unit filename="mob.hpp" />
+		<Unit filename="perlin.cpp" />
+		<Unit filename="perlin.hpp" />
+		<Unit filename="player.cpp" />
+		<Unit filename="player.hpp" />
+		<Unit filename="salvager.cpp" />
+		<Unit filename="salvager.hpp" />
+		<Unit filename="tools.cpp" />
+		<Unit filename="tools.hpp" />
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+			<lib_finder disable_auto="1" />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>
