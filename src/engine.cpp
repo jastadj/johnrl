@@ -8,6 +8,10 @@
 Engine::Engine()
 {
 
+    //default initialization
+    m_TileWidth = 8;
+    m_TileHeight = 12;
+
 }
 
 Engine::~Engine()
@@ -17,54 +21,41 @@ Engine::~Engine()
 
 void Engine::start()
 {
+    //init screen
+    initScreen();
 
-    //init curses
-    //initCurses();
+    //init tile art
+    initTileArt();
 
-    //xml parse testing
-    tinyxml2::XMLDocument doc;
-    doc.LoadFile("dream.xml");
-
-
-    tinyxml2::XMLElement *myelement;
-    myelement = doc.FirstChildElement("PLAY");
-    if(myelement != NULL)
-    {
-        if(myelement->FirstChild()->Value() != NULL)
-        {
-            std::cout << myelement->FirstChild()->Value() << std::endl;
-            if(myelement->FirstChild()->FirstChild() != NULL)
-            {
-                std::cout << myelement->FirstChild()->FirstChild()->Value() << std::endl;
-            }
-        }
-    }
-
-
-    return;
-
-
-    //start main loop
+    //start mainloop
     mainLoop();
 
-    //clean up terminal before exit
-    clear();
-    refresh();
 }
 
-bool Engine::initCurses()
+bool Engine::initScreen()
 {
-    //init main curses
-    initscr();
+    m_Screen = new sf::RenderWindow(sf::VideoMode(800,600,32), "Test");
 
-    //enable other keys
-    keypad(stdscr, TRUE);
+    return true;
+}
 
-    //disable cursor
-    curs_set(0);
+bool Engine::initTileArt()
+{
+    //load tile sheet
 
-    //disable echoing of keys
-    noecho();
+    sf::Image tempimg;
+    tempimg.loadFromFile("tileart.png");
+
+    //replace color
+    replaceImageColor(&tempimg, sf::Color(0xff, 0x00, 0xff), sf::Color(255,0,0));
+
+    sf::Texture temptexture;
+    temptexture.loadFromImage(tempimg);
+
+    m_TileTextures.resize(1);
+    m_TileTextures[0].resize(1);
+    m_TileTextures[0][0] = temptexture;
+
 
     return true;
 }
@@ -72,20 +63,57 @@ bool Engine::initCurses()
 void Engine::mainLoop()
 {
     bool quit = false;
-    int k = 0;
 
+    //test sprite
+    sf::Sprite testsprite(m_TileTextures[0][0]);
+
+    //frame loop
     while(!quit)
     {
+        //create event que
+        sf::Event event;
 
-        clear();
+        //clear screen
+        m_Screen->clear();
 
-        printw("test!\n");
-        mvprintw(24,0, "Key Pressed:%d", k);
+        //handle events
+        while(m_Screen->pollEvent(event))
+        {
+            if(event.type == sf::Event::Closed) quit = true;
+            else if(event.type == sf::Event::KeyPressed)
+            {
+                if(event.key.code == sf::Keyboard::Escape) quit = true;
+            }
+        }
 
-        k = getch();
+        //draw
+        m_Screen->draw(testsprite);
 
-        //escape key
-        if(k == 27) quit = true;
+        //update and display screen
+        m_Screen->display();
 
+    }
+}
+
+
+
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////
+//
+
+void Engine::replaceImageColor(sf::Image *timage, sf::Color scolor, sf::Color dcolor)
+{
+    int x = timage->getSize().x;
+    int y = timage->getSize().y;
+
+    for(int i = 0; i < y; i++)
+    {
+        for(int n = 0; n < x; n++)
+        {
+            if(timage->getPixel(n,i) == scolor) timage->setPixel(n,i, dcolor);
+        }
     }
 }

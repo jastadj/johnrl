@@ -13,12 +13,11 @@
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-g" />
-					<Add directory="include" />
-					<Add directory="include/curses" />
 				</Compiler>
 				<Linker>
-					<Add directory="lib" />
-					<Add directory="lib/curses" />
+					<Add library="sfml-graphics-d" />
+					<Add library="sfml-window-d" />
+					<Add library="sfml-system-d" />
 				</Linker>
 			</Target>
 			<Target title="Release">
@@ -36,18 +35,18 @@
 		</Build>
 		<Compiler>
 			<Add option="-Wall" />
+			<Add directory="../../SFML-2.3.1/include" />
+			<Add directory="include" />
 		</Compiler>
 		<Linker>
-			<Add library="lib\curses\pdcurses.a" />
+			<Add directory="../../SFML-2.3.1/lib" />
 		</Linker>
 		<Unit filename="include/defs.hpp" />
 		<Unit filename="include/engine.hpp" />
 		<Unit filename="include/map.hpp" />
-		<Unit filename="include/tinyxml2.h" />
 		<Unit filename="src/engine.cpp" />
 		<Unit filename="src/main.cpp" />
 		<Unit filename="src/map.cpp" />
-		<Unit filename="src/tinyxml2.cpp" />
 		<Extensions>
 			<code_completion />
 			<envvars />
