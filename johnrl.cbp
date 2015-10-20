@@ -30,16 +30,19 @@
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
+					<Add library="sfml-graphics" />
+					<Add library="sfml-window" />
+					<Add library="sfml-system" />
 				</Linker>
 			</Target>
 		</Build>
 		<Compiler>
 			<Add option="-Wall" />
-			<Add directory="../../SFML-2.3.1/include" />
+			<Add directory="../../SFML-2.2/include" />
 			<Add directory="include" />
 		</Compiler>
 		<Linker>
-			<Add directory="../../SFML-2.3.1/lib" />
+			<Add directory="../../SFML-2.2/lib" />
 		</Linker>
 		<Unit filename="include/defs.hpp" />
 		<Unit filename="include/engine.hpp" />

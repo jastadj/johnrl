@@ -2,6 +2,7 @@
 #define CLASS_ENGINE
 
 #include <SFML/Graphics.hpp>
+#include "defs.hpp"
 #include <vector>
 
 class Engine
@@ -10,6 +11,7 @@ private:
 
     //screen elements
     sf::RenderWindow *m_Screen;
+    std::vector<sf::Color> m_AsciiColors;
 
     //init
     bool initScreen();
@@ -18,6 +20,8 @@ private:
     //resources
     int m_TileWidth;
     int m_TileHeight;
+    int m_ScreenTilesWidth;
+    int m_ScreenTilesHeight;
     std::vector< std::vector< sf::Texture> > m_TileTextures;
     std::vector <std::vector< std::vector< sf::Sprite> > > m_TileSprites;
 

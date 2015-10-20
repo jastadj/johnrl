@@ -11,6 +11,8 @@ Engine::Engine()
     //default initialization
     m_TileWidth = 8;
     m_TileHeight = 12;
+    m_ScreenTilesWidth = 80;
+    m_ScreenTilesHeight = 25;
 
 }
 
@@ -34,27 +36,44 @@ void Engine::start()
 
 bool Engine::initScreen()
 {
-    m_Screen = new sf::RenderWindow(sf::VideoMode(800,600,32), "Test");
+    //create render window
+    m_Screen = new sf::RenderWindow(sf::VideoMode(m_ScreenTilesWidth*m_TileWidth, m_ScreenTilesHeight*m_TileHeight,32), "Test");
+
+    //create colors
+    m_AsciiColors.push_back(sf::Color(0x00, 0x00, 0x00)); // black
+    m_AsciiColors.push_back(sf::Color(0xff, 0xff, 0xff)); // white
+    m_AsciiColors.push_back(sf::Color(0xff, 0xff, 0xff)); // bright white
+    m_AsciiColors.push_back(sf::Color(0xff, 0x00, 0x00)); // red
+    m_AsciiColors.push_back(sf::Color(0xff, 0x00, 0x00)); // bright red
+    m_AsciiColors.push_back(sf::Color(0x00, 0x00, 0xff)); // blue
+    m_AsciiColors.push_back(sf::Color(0x00, 0x00, 0xff)); // bright blue
+    m_AsciiColors.push_back(sf::Color(0x00, 0xff, 0x00)); // green
+    m_AsciiColors.push_back(sf::Color(0x00, 0xff, 0x00)); // bright green
+    m_AsciiColors.push_back(sf::Color(0x00, 0xff, 0xff)); // cyan
+    m_AsciiColors.push_back(sf::Color(0x00, 0xff, 0xff)); // bright cyan
+    m_AsciiColors.push_back(sf::Color(0xff, 0x00, 0xff)); // magenta
+    m_AsciiColors.push_back(sf::Color(0xff, 0x00, 0xff)); // bright magenta
+    m_AsciiColors.push_back(sf::Color(0xff, 0xff, 0x00)); // yellow
+    m_AsciiColors.push_back(sf::Color(0xff, 0xff, 0x00)); // bright yellow
 
     return true;
 }
 
 bool Engine::initTileArt()
 {
-    //load tile sheet
+    std::cout << "Generating tile sheets...\n";
+    //create texture for each color combination
+    for(int i = 0; i < COLOR_TOTAL; i++)
+    {
+        //add column
+        m_TileTextures.resize(m_TileTextures.size()+1);
 
-    sf::Image tempimg;
-    tempimg.loadFromFile("tileart.png");
-
-    //replace color
-    replaceImageColor(&tempimg, sf::Color(0xff, 0x00, 0xff), sf::Color(255,0,0));
-
-    sf::Texture temptexture;
-    temptexture.loadFromImage(tempimg);
-
-    m_TileTextures.resize(1);
-    m_TileTextures[0].resize(1);
-    m_TileTextures[0][0] = temptexture;
+        for(int n = 0; n < COLOR_TOTAL; n++)
+        {
+            sf::Image newimage;
+            newimage.loadFromFile("tileart.png");
+        }
+    }
 
 
     return true;
