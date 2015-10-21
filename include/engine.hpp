@@ -20,6 +20,8 @@ private:
     //resources
     int m_TileWidth;
     int m_TileHeight;
+    int m_TileSheetWidth;
+    int m_TileSheetHeight;
     int m_ScreenTilesWidth;
     int m_ScreenTilesHeight;
     std::vector< std::vector< sf::Texture> > m_TileTextures;

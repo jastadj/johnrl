@@ -11,6 +11,8 @@ Engine::Engine()
     //default initialization
     m_TileWidth = 8;
     m_TileHeight = 12;
+    m_TileSheetWidth = 16;
+    m_TileSheetHeight = 16;
     m_ScreenTilesWidth = 80;
     m_ScreenTilesHeight = 25;
 
@@ -24,12 +26,17 @@ Engine::~Engine()
 void Engine::start()
 {
     //init screen
-    initScreen();
+    std::cout << "Initializing screen...";
+    if(initScreen()) std::cout << "done.\n";
+    else std::cout << "failed.\n";
 
     //init tile art
-    initTileArt();
+    std::cout << "Initializing tile sprites...";
+    if(initTileArt()) std::cout << "done.\n";
+    else std::cout << "failed.\n";
 
     //start mainloop
+    std::cout << "Starting main loop...\n";
     mainLoop();
 
 }
@@ -38,6 +45,8 @@ bool Engine::initScreen()
 {
     //create render window
     m_Screen = new sf::RenderWindow(sf::VideoMode(m_ScreenTilesWidth*m_TileWidth, m_ScreenTilesHeight*m_TileHeight,32), "Test");
+    m_Screen->clear();
+    m_Screen->display();
 
     //create colors
     m_AsciiColors.push_back(sf::Color(0x00, 0x00, 0x00)); // black
@@ -61,20 +70,59 @@ bool Engine::initScreen()
 
 bool Engine::initTileArt()
 {
-    std::cout << "Generating tile sheets...\n";
+    //color mask for foreground and background
+    sf::Color colormaskbg(0xff,0x00,0xff);
+    sf::Color colormaskfg(0xff,0xff,0xff);
+
     //create texture for each color combination
+    //background color loop
     for(int i = 0; i < COLOR_TOTAL; i++)
     {
         //add column
         m_TileTextures.resize(m_TileTextures.size()+1);
 
+        //foreground color loop
         for(int n = 0; n < COLOR_TOTAL; n++)
         {
+            //texture for image
+            sf::Texture newtxt;
+
+            //create temporary image file
             sf::Image newimage;
             newimage.loadFromFile("tileart.png");
+
+            //set foreground color
+            replaceImageColor(&newimage, colormaskfg, m_AsciiColors[n]);
+
+            //set background color
+            replaceImageColor(&newimage, colormaskbg, m_AsciiColors[i]);
+
+            //set texture from image
+            newtxt.loadFromImage(newimage);
+
+            //debug
+            sf::Sprite testsprite(newtxt);
+            m_Screen->draw(testsprite);
+            m_Screen->display();
+
+            m_TileTextures[i].push_back(newtxt);
         }
     }
 
+    //clip all the characters for each character type from bg/fg combos
+    for(int i = 0; i < m_TileSheetWidth*m_TileSheetHeight; i++)
+    {
+        //for each character, go through each color combination and clip to a sprite
+        //bg color loop
+        for(int n = 0; n < COLOR_TOTAL; n++)
+        {
+            //fg color loop
+            for(int p = 0; p < COLOR_TOTAL; p++)
+            {
+
+            }
+        }
+    }
 
     return true;
 }
@@ -84,7 +132,7 @@ void Engine::mainLoop()
     bool quit = false;
 
     //test sprite
-    sf::Sprite testsprite(m_TileTextures[0][0]);
+    sf::Sprite testsprite(m_TileTextures[0][1]);
 
     //frame loop
     while(!quit)
