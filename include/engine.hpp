@@ -13,6 +13,9 @@ private:
     //screen elements
     sf::RenderWindow *m_Screen;
     std::vector<sf::Color> m_AsciiColors;
+    int m_TermCurrentFGColor;
+    int m_TermCurrentBGColor;
+    sf::Vector2f m_TermCurrentCursorPos;
 
     //init
     bool initScreen();
@@ -30,6 +33,11 @@ private:
 
     //loops
     void mainLoop();
+
+    //draw
+    void drawTile(int x, int y, int tilenum, int fgcolor = 1, int bgcolor = 0);
+    void drawTile(int x, int y, char ch, int fgcolor = 1, int bgcolor = 0);
+
 
 public:
     Engine();

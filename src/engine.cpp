@@ -15,7 +15,8 @@ Engine::Engine()
     m_TileSheetHeight = 16;
     m_ScreenTilesWidth = 80;
     m_ScreenTilesHeight = 25;
-
+    m_TermCurrentBGColor = COLOR_BLACK;
+    m_TermCurrentFGColor = COLOR_WHITE;
 }
 
 Engine::~Engine()
@@ -101,9 +102,9 @@ bool Engine::initTileArt()
             newtxt.loadFromImage(newimage);
 
             //debug
-            sf::Sprite testsprite(newtxt);
-            m_Screen->draw(testsprite);
-            m_Screen->display();
+            //sf::Sprite testsprite(newtxt);
+            //m_Screen->draw(testsprite);
+            //m_Screen->display();
 
             m_TileTextures[i].push_back(newtxt);
         }
@@ -129,8 +130,14 @@ bool Engine::initTileArt()
 
                 clip.width = m_TileWidth;
                 clip.height = m_TileHeight;
+                clip.left = (i - ( (i/m_TileSheetWidth) * m_TileSheetWidth ) ) * m_TileWidth;
+                clip.top = (i/m_TileSheetWidth) * m_TileHeight;
 
                 sf::Sprite newsprite(m_TileTextures[n][p], clip);
+
+                //debug
+                //m_Screen->draw(newsprite);
+                //m_Screen->display();
 
                 m_TileSprites[i][n].push_back(newsprite);
             }
@@ -143,6 +150,10 @@ bool Engine::initTileArt()
 void Engine::mainLoop()
 {
     bool quit = false;
+
+    int testindex = 0;
+
+    std::cout << "a = " << int(char('a')) << std::endl;
 
     //frame loop
     while(!quit)
@@ -160,10 +171,22 @@ void Engine::mainLoop()
             else if(event.type == sf::Event::KeyPressed)
             {
                 if(event.key.code == sf::Keyboard::Escape) quit = true;
+                else if(event.key.code == sf::Keyboard::Left)
+                {
+                    testindex--;
+                    std::cout << "testindex=" << testindex << std::endl;
+                }
+                else if(event.key.code == sf::Keyboard::Right)
+                {
+                    testindex++;
+                    std::cout << "testindex=" << testindex << std::endl;
+                }
             }
         }
 
         //draw
+        drawTile(0,0, testindex, COLOR_WHITE);
+        drawTile(1, 0, 'a');
 
         //update and display screen
         m_Screen->display();
@@ -171,3 +194,30 @@ void Engine::mainLoop()
     }
 }
 
+/////////////////////////////////////////////////////////////////////////////////
+//  DRAW
+void Engine::drawTile(int x, int y, int tilenum, int fgcolor, int bgcolor)
+{
+    //assuming color black = 0, dont do anything
+    if(fgcolor == 0 && bgcolor == 0) return;
+
+    //check that color and tile indices are in range
+    if(fgcolor < 0 || bgcolor < 0 || fgcolor >= COLOR_TOTAL || bgcolor >= COLOR_TOTAL)
+    {
+        std::cout << "Error drawing tile, color index out of range : bg=" << bgcolor << " , fg=" << fgcolor << std::endl;
+        return;
+    }
+    else if(tilenum < 0 || tilenum >= int(m_TileSprites.size()) )
+    {
+        std::cout << "Error drawing tile, sprite index out of range : " << tilenum << std::endl;
+        return;
+    }
+
+    m_TileSprites[tilenum][bgcolor][fgcolor].setPosition(x*m_TileWidth, y*m_TileHeight);
+    m_Screen->draw(m_TileSprites[tilenum][bgcolor][fgcolor]);
+}
+
+void Engine::drawTile(int x, int y, char ch, int fgcolor, int bgcolor)
+{
+    drawTile(x, y, int(ch), fgcolor, bgcolor);
+}
