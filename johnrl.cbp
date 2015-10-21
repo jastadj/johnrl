@@ -47,9 +47,11 @@
 		<Unit filename="include/defs.hpp" />
 		<Unit filename="include/engine.hpp" />
 		<Unit filename="include/map.hpp" />
+		<Unit filename="include/tools.hpp" />
 		<Unit filename="src/engine.cpp" />
 		<Unit filename="src/main.cpp" />
 		<Unit filename="src/map.cpp" />
+		<Unit filename="src/tools.cpp" />
 		<Extensions>
 			<code_completion />
 			<envvars />

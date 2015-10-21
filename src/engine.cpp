@@ -112,14 +112,27 @@ bool Engine::initTileArt()
     //clip all the characters for each character type from bg/fg combos
     for(int i = 0; i < m_TileSheetWidth*m_TileSheetHeight; i++)
     {
+        //add new character index
+        m_TileSprites.resize( m_TileSprites.size()+1);
+
         //for each character, go through each color combination and clip to a sprite
         //bg color loop
         for(int n = 0; n < COLOR_TOTAL; n++)
         {
+            //add new background index
+            m_TileSprites[i].resize( m_TileSprites[i].size()+1);
+
             //fg color loop
             for(int p = 0; p < COLOR_TOTAL; p++)
             {
+                sf::IntRect clip;
 
+                clip.width = m_TileWidth;
+                clip.height = m_TileHeight;
+
+                sf::Sprite newsprite(m_TileTextures[n][p], clip);
+
+                m_TileSprites[i][n].push_back(newsprite);
             }
         }
     }
@@ -130,9 +143,6 @@ bool Engine::initTileArt()
 void Engine::mainLoop()
 {
     bool quit = false;
-
-    //test sprite
-    sf::Sprite testsprite(m_TileTextures[0][1]);
 
     //frame loop
     while(!quit)
@@ -154,7 +164,6 @@ void Engine::mainLoop()
         }
 
         //draw
-        m_Screen->draw(testsprite);
 
         //update and display screen
         m_Screen->display();
@@ -162,25 +171,3 @@ void Engine::mainLoop()
     }
 }
 
-
-
-
-
-
-
-////////////////////////////////////////////////////////////////////////////////////////
-//
-
-void Engine::replaceImageColor(sf::Image *timage, sf::Color scolor, sf::Color dcolor)
-{
-    int x = timage->getSize().x;
-    int y = timage->getSize().y;
-
-    for(int i = 0; i < y; i++)
-    {
-        for(int n = 0; n < x; n++)
-        {
-            if(timage->getPixel(n,i) == scolor) timage->setPixel(n,i, dcolor);
-        }
-    }
-}

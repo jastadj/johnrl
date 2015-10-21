@@ -3,6 +3,7 @@
 
 #include <SFML/Graphics.hpp>
 #include "defs.hpp"
+#include "tools.hpp"
 #include <vector>
 
 class Engine
@@ -29,9 +30,6 @@ private:
 
     //loops
     void mainLoop();
-
-    //tools
-    void replaceImageColor(sf::Image *timage, sf::Color scolor, sf::Color dcolor);
 
 public:
     Engine();
