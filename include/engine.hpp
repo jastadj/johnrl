@@ -2,9 +2,13 @@
 #define CLASS_ENGINE
 
 #include <SFML/Graphics.hpp>
+#include <vector>
+
 #include "defs.hpp"
 #include "tools.hpp"
-#include <vector>
+#include "gameobj.hpp"
+#include "map.hpp"
+
 
 class Engine
 {

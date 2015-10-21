@@ -151,10 +151,6 @@ void Engine::mainLoop()
 {
     bool quit = false;
 
-    int testindex = 0;
-
-    std::cout << "a = " << int(char('a')) << std::endl;
-
     //frame loop
     while(!quit)
     {
@@ -173,20 +169,17 @@ void Engine::mainLoop()
                 if(event.key.code == sf::Keyboard::Escape) quit = true;
                 else if(event.key.code == sf::Keyboard::Left)
                 {
-                    testindex--;
-                    std::cout << "testindex=" << testindex << std::endl;
+
                 }
                 else if(event.key.code == sf::Keyboard::Right)
                 {
-                    testindex++;
-                    std::cout << "testindex=" << testindex << std::endl;
+
                 }
             }
         }
 
         //draw
-        drawTile(0,0, testindex, COLOR_WHITE);
-        drawTile(1, 0, 'a');
+
 
         //update and display screen
         m_Screen->display();
