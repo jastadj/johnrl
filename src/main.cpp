@@ -3,9 +3,11 @@
 
 int main(int argc, char *argv[])
 {
-    Engine engine;
+    Engine *engine = NULL;
+    engine = Engine::getInstance();
 
-    engine.start();
+    engine->start();
+
 
     return 0;
 }
