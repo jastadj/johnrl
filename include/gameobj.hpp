@@ -1,6 +1,7 @@
 #ifndef CLASS_GAMEOBJ
 #define CLASS_GAMEOBJ
 
+#include <SFML/Graphics.hpp>
 #include <string>
 #include "defs.hpp"
 
@@ -8,13 +9,15 @@
 
 class GameObj
 {
-private:
+protected:
 
     std::string m_Name;
 
     int m_TileID;
     int m_BGColor;
     int m_FGColor;
+
+    sf::Vector2i m_Position;
 
 public:
     GameObj();
@@ -26,6 +29,10 @@ public:
     int getTileID() { return m_TileID; }
     int getBGColor() { return m_BGColor;}
     int getFGColor() { return m_FGColor;}
+
+    sf::Vector2i getPosition() { return m_Position;}
+    void setPosition(sf::Vector2i newpos) { m_Position = newpos;}
+    void setPosition(int x, int y) { m_Position = sf::Vector2i(x, y);}
 
     friend class Engine;
 };
