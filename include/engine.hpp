@@ -14,6 +14,11 @@ class Engine
 {
 private:
 
+    //singleton
+    Engine();
+    static Engine *onlyinstance;
+
+
     //screen elements
     sf::RenderWindow *m_Screen;
     std::vector<sf::Color> m_AsciiColors;
@@ -24,6 +29,7 @@ private:
     //init
     bool initScreen();
     bool initTileArt();
+    bool initMapTiles();
 
     //resources
     int m_TileWidth;
@@ -34,6 +40,7 @@ private:
     int m_ScreenTilesHeight;
     std::vector< std::vector< sf::Texture> > m_TileTextures;
     std::vector <std::vector< std::vector< sf::Sprite> > > m_TileSprites;
+    std::vector< MapTile > m_MapTiles;
 
     //loops
     void mainLoop();
@@ -44,8 +51,13 @@ private:
 
 
 public:
-    Engine();
     ~Engine();
+
+    static Engine *getInstance()
+    {
+        if(onlyinstance == NULL) onlyinstance = new Engine;
+        return onlyinstance;
+    }
 
     void start();
 

@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 
+Engine *Engine::onlyinstance = NULL;
 
 Engine::Engine()
 {
@@ -145,6 +146,17 @@ bool Engine::initTileArt()
     }
 
     return true;
+}
+
+bool Engine::initMapTiles()
+{
+    MapTile newtile;
+
+
+    newtile.m_Name = "floor";
+    newtile.m_TileID = int('.');
+
+    m_MapTiles.push_back(newtile);
 }
 
 void Engine::mainLoop()
