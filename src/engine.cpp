@@ -269,7 +269,6 @@ void Engine::drawTile(int x, int y, char ch, int fgcolor, int bgcolor)
     drawTile(x, y, int(ch), fgcolor, bgcolor);
 }
 
-<<<<<<< HEAD
 void Engine::drawString(int x, int y, std::string tstring, int fgcolor, int bgcolor)
 {
     sf::Vector2i cursorpos = sf::Vector2i(x,y);
@@ -280,7 +279,7 @@ void Engine::drawString(int x, int y, std::string tstring, int fgcolor, int bgco
         cursorpos.x++;
     }
 }
-=======
+
 void Engine::drawPlayer()
 {
     if(m_Player == NULL) return;
@@ -289,4 +288,4 @@ void Engine::drawPlayer()
 
     drawTile(ppos.x, ppos.y, m_Player->getTileID(), m_Player->getFGColor(), m_Player->getBGColor());
 }
->>>>>>> 0ea40060a25a5c948930020e689a4a6714b4c27d
+
