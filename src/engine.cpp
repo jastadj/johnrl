@@ -226,3 +226,14 @@ void Engine::drawTile(int x, int y, char ch, int fgcolor, int bgcolor)
 {
     drawTile(x, y, int(ch), fgcolor, bgcolor);
 }
+
+void Engine::drawString(int x, int y, std::string tstring, int fgcolor, int bgcolor)
+{
+    sf::Vector2i cursorpos = sf::Vector2i(x,y);
+
+    for(int i = 0; i < int(tstring.length()); i++)
+    {
+        drawTile(cursorpos.x, cursorpos.y, tstring.c_str()[i], fgcolor, bgcolor);
+        cursorpos.x++;
+    }
+}
