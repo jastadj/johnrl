@@ -8,7 +8,7 @@
 #include "tools.hpp"
 #include "gameobj.hpp"
 #include "map.hpp"
-
+#include "player.hpp"
 
 class Engine
 {
@@ -30,6 +30,7 @@ private:
     bool initScreen();
     bool initTileArt();
     bool initMapTiles();
+    bool initPlayer();
 
     //resources
     int m_TileWidth;
@@ -42,6 +43,9 @@ private:
     std::vector <std::vector< std::vector< sf::Sprite> > > m_TileSprites;
     std::vector< MapTile > m_MapTiles;
 
+    //game objects
+    Player *m_Player;
+
     //loops
     void mainLoop();
 
@@ -49,6 +53,7 @@ private:
     void drawTile(int x, int y, int tilenum, int fgcolor = 1, int bgcolor = 0);
     void drawTile(int x, int y, char ch, int fgcolor = 1, int bgcolor = 0);
     void drawString(int x, int y, std::string tstring, int fgcolor = 1, int bgcolor = 0);
+    void drawPlayer();
 
 public:
     ~Engine();

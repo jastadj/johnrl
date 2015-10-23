@@ -9,6 +9,9 @@ Engine *Engine::onlyinstance = NULL;
 Engine::Engine()
 {
 
+    //init pointers to null
+    m_Player = NULL;
+
     //default initialization
     m_TileWidth = 8;
     m_TileHeight = 12;
@@ -36,6 +39,12 @@ void Engine::start()
     std::cout << "Initializing tile sprites...";
     if(initTileArt()) std::cout << "done.\n";
     else std::cout << "failed.\n";
+
+    //init player
+    std::cout << "Initializing player...";
+    if(initPlayer()) std::cout << "done.\n";
+    else std::cout << "failed.\n";
+
 
     //start mainloop
     std::cout << "Starting main loop...\n";
@@ -159,6 +168,15 @@ bool Engine::initMapTiles()
     m_MapTiles.push_back(newtile);
 }
 
+bool Engine::initPlayer()
+{
+    if(m_Player != NULL) delete m_Player;
+
+    m_Player = new Player;
+
+    return true;
+}
+
 void Engine::mainLoop()
 {
     bool quit = false;
@@ -179,19 +197,43 @@ void Engine::mainLoop()
             else if(event.type == sf::Event::KeyPressed)
             {
                 if(event.key.code == sf::Keyboard::Escape) quit = true;
-                else if(event.key.code == sf::Keyboard::Left)
+                else if(event.key.code == sf::Keyboard::Left || event.key.code == sf::Keyboard::Numpad4)
                 {
-
+                    m_Player->walkDir(DIR_WEST);
                 }
-                else if(event.key.code == sf::Keyboard::Right)
+                else if(event.key.code == sf::Keyboard::Right || event.key.code == sf::Keyboard::Numpad6)
                 {
-
+                    m_Player->walkDir(DIR_EAST);
+                }
+                else if(event.key.code == sf::Keyboard::Up || event.key.code == sf::Keyboard::Numpad8)
+                {
+                    m_Player->walkDir(DIR_NORTH);
+                }
+                else if(event.key.code == sf::Keyboard::Down || event.key.code == sf::Keyboard::Numpad2)
+                {
+                    m_Player->walkDir(DIR_SOUTH);
+                }
+                else if(event.key.code == sf::Keyboard::Numpad1)
+                {
+                    m_Player->walkDir(DIR_SW);
+                }
+                else if(event.key.code == sf::Keyboard::Numpad3)
+                {
+                    m_Player->walkDir(DIR_SE);
+                }
+                else if(event.key.code == sf::Keyboard::Numpad7)
+                {
+                    m_Player->walkDir(DIR_NW);
+                }
+                else if(event.key.code == sf::Keyboard::Numpad9)
+                {
+                    m_Player->walkDir(DIR_NE);
                 }
             }
         }
 
         //draw
-
+        drawPlayer();
 
         //update and display screen
         m_Screen->display();
@@ -227,6 +269,7 @@ void Engine::drawTile(int x, int y, char ch, int fgcolor, int bgcolor)
     drawTile(x, y, int(ch), fgcolor, bgcolor);
 }
 
+<<<<<<< HEAD
 void Engine::drawString(int x, int y, std::string tstring, int fgcolor, int bgcolor)
 {
     sf::Vector2i cursorpos = sf::Vector2i(x,y);
@@ -237,3 +280,13 @@ void Engine::drawString(int x, int y, std::string tstring, int fgcolor, int bgco
         cursorpos.x++;
     }
 }
+=======
+void Engine::drawPlayer()
+{
+    if(m_Player == NULL) return;
+
+    sf::Vector2i ppos = m_Player->getPosition();
+
+    drawTile(ppos.x, ppos.y, m_Player->getTileID(), m_Player->getFGColor(), m_Player->getBGColor());
+}
+>>>>>>> 0ea40060a25a5c948930020e689a4a6714b4c27d

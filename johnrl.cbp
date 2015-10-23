@@ -44,15 +44,19 @@
 		<Linker>
 			<Add directory="../../SFML-2.2/lib" />
 		</Linker>
+		<Unit filename="include/actor.hpp" />
 		<Unit filename="include/defs.hpp" />
 		<Unit filename="include/engine.hpp" />
 		<Unit filename="include/gameobj.hpp" />
 		<Unit filename="include/map.hpp" />
+		<Unit filename="include/player.hpp" />
 		<Unit filename="include/tools.hpp" />
+		<Unit filename="src/actor.cpp" />
 		<Unit filename="src/engine.cpp" />
 		<Unit filename="src/gameobj.cpp" />
 		<Unit filename="src/main.cpp" />
 		<Unit filename="src/map.cpp" />
+		<Unit filename="src/player.cpp" />
 		<Unit filename="src/tools.cpp" />
 		<Extensions>
 			<code_completion />
