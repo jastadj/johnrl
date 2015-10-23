@@ -31,6 +31,7 @@ public:
 
     int getTile(int x, int y);
     void setTile(int x, int y, int tileid);
+    void setTileRandom(int x, int y, int tileidstart, int tileidend);
 
     void fillMap(int tileid);
 };

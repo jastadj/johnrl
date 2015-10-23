@@ -15,6 +15,7 @@ Engine::Engine()
     testmap = NULL;
 
     //default initialization
+    m_FrameRateLimit = 30;
     m_TileWidth = 8;
     m_TileHeight = 12;
     m_TileSheetWidth = 16;
@@ -66,6 +67,7 @@ bool Engine::initScreen()
 {
     //create render window
     m_Screen = new sf::RenderWindow(sf::VideoMode(m_ScreenTilesWidth*m_TileWidth, m_ScreenTilesHeight*m_TileHeight,32), "Test");
+    m_Screen->setFramerateLimit(m_FrameRateLimit);
     m_Screen->clear();
     m_Screen->display();
 
@@ -191,6 +193,89 @@ bool Engine::initMapTiles()
     newtile.m_Name = "wall";
     newtile.m_TileID = int(219);
     m_MapTiles.push_back(newtile);
+
+    //**********START GRASS TILES***********
+    //tile 3 - START GRASS TILES
+    newtile = MapTile();
+    newtile.m_Name = "grass";
+    newtile.m_TileID = int('.');
+    newtile.m_BGColor = COLOR_BLACK;
+    newtile.m_FGColor = COLOR_GREEN;
+    m_MapTiles.push_back(newtile);
+
+    //tile 4
+    newtile = MapTile();
+    newtile.m_Name = "grass";
+    newtile.m_TileID = int(',');
+    newtile.m_BGColor = COLOR_BLACK;
+    newtile.m_FGColor = COLOR_GREEN;
+    m_MapTiles.push_back(newtile);
+
+    //tile 5
+    newtile = MapTile();
+    newtile.m_Name = "grass";
+    newtile.m_TileID = int('`');
+    newtile.m_BGColor = COLOR_BLACK;
+    newtile.m_FGColor = COLOR_GREEN;
+    m_MapTiles.push_back(newtile);
+
+    //tile 6
+    newtile = MapTile();
+    newtile.m_Name = "grass";
+    newtile.m_TileID = int('\'');
+    newtile.m_BGColor = COLOR_BLACK;
+    newtile.m_FGColor = COLOR_GREEN;
+    m_MapTiles.push_back(newtile);
+
+    //tile 7
+    newtile = MapTile();
+    newtile.m_Name = "grass";
+    newtile.m_TileID = int('\"');
+    newtile.m_BGColor = COLOR_BLACK;
+    newtile.m_FGColor = COLOR_GREEN;
+    m_MapTiles.push_back(newtile);
+
+    //tile 8 - START LIGHT GRASS
+    newtile = MapTile();
+    newtile.m_Name = "grass";
+    newtile.m_TileID = int('.');
+    newtile.m_BGColor = COLOR_BLACK;
+    newtile.m_FGColor = COLOR_B_GREEN;
+    m_MapTiles.push_back(newtile);
+
+    //tile 9
+    newtile = MapTile();
+    newtile.m_Name = "grass";
+    newtile.m_TileID = int(',');
+    newtile.m_BGColor = COLOR_BLACK;
+    newtile.m_FGColor = COLOR_B_GREEN;
+    m_MapTiles.push_back(newtile);
+
+    //tile 10
+    newtile = MapTile();
+    newtile.m_Name = "grass";
+    newtile.m_TileID = int('`');
+    newtile.m_BGColor = COLOR_BLACK;
+    newtile.m_FGColor = COLOR_B_GREEN;
+    m_MapTiles.push_back(newtile);
+
+    //tile 11
+    newtile = MapTile();
+    newtile.m_Name = "grass";
+    newtile.m_TileID = int('\'');
+    newtile.m_BGColor = COLOR_BLACK;
+    newtile.m_FGColor = COLOR_B_GREEN;
+    m_MapTiles.push_back(newtile);
+
+
+    //tile 12
+    newtile = MapTile();
+    newtile.m_Name = "grass";
+    newtile.m_TileID = int('\"');
+    newtile.m_BGColor = COLOR_BLACK;
+    newtile.m_FGColor = COLOR_B_GREEN;
+    m_MapTiles.push_back(newtile);
+    //**********END GRASS TILES***********
 }
 
 bool Engine::initPlayer()

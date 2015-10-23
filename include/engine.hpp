@@ -21,6 +21,7 @@ private:
 
     //screen elements
     sf::RenderWindow *m_Screen;
+    int m_FrameRateLimit;
     std::vector<sf::Color> m_AsciiColors;
     int m_TermCurrentFGColor;
     int m_TermCurrentBGColor;

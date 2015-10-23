@@ -24,7 +24,14 @@ MapChunk::MapChunk(int width, int height)
     m_MapData.resize(height);
     for(int i = 0; i < int(m_MapData.size()); i++) m_MapData[i].resize(width);
 
-    fillMap(1);
+    //fillMap(1);
+    for(int i = 0; i < int(m_MapData.size()); i++)
+    {
+        for(int n = 0; n < int(m_MapData[0].size()); n++)
+        {
+            setTileRandom(n, i, 3, 12);
+        }
+    }
 
 
 }
@@ -74,6 +81,17 @@ int MapChunk::getTile(int x, int y)
     else return m_MapData[y][x];
 }
 
+void MapChunk::setTile(int x, int y, int tileid)
+{
+    if(!mapDataValid(x,y))
+    {
+        std::cout << "Error setting map tile, map position " << x << "," << y << " is not valid!\n";
+        return;
+    }
+
+    else m_MapData[y][x] = tileid;
+}
+
 void MapChunk::fillMap(int tileid)
 {
     for(int i = 0; i < int(m_MapData.size()); i++)
@@ -83,4 +101,15 @@ void MapChunk::fillMap(int tileid)
             m_MapData[i][n] = tileid;
         }
     }
+}
+
+void MapChunk::setTileRandom(int x, int y, int tileidstart, int tileidend)
+{
+    if(!mapDataValid(x, y))
+    {
+        std::cout << "Error setting map tile random, map position " << x << "," << y << " is not valid!\n";
+        return;
+    }
+
+    m_MapData[y][x] = rand()%(tileidend - tileidstart + 1) + tileidstart;
 }
