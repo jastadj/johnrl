@@ -3,6 +3,7 @@
 //debug
 #include <iostream>
 #include <string>
+#include <cmath>
 
 Engine *Engine::onlyinstance = NULL;
 
@@ -11,6 +12,7 @@ Engine::Engine()
 
     //init pointers to null
     m_Player = NULL;
+    testmap = NULL;
 
     //default initialization
     m_TileWidth = 8;
@@ -21,6 +23,10 @@ Engine::Engine()
     m_ScreenTilesHeight = 25;
     m_TermCurrentBGColor = COLOR_BLACK;
     m_TermCurrentFGColor = COLOR_WHITE;
+
+    //set seed
+    m_Seed = long(time(NULL));
+    srand(m_Seed);
 }
 
 Engine::~Engine()
@@ -38,6 +44,10 @@ void Engine::start()
     //init tile art
     std::cout << "Initializing tile sprites...";
     if(initTileArt()) std::cout << "done.\n";
+    else std::cout << "failed.\n";
+
+    std::cout << "Initializing map tiles...";
+    if(initMapTiles()) std::cout << "done.\n";
     else std::cout << "failed.\n";
 
     //init player
@@ -61,19 +71,19 @@ bool Engine::initScreen()
 
     //create colors
     m_AsciiColors.push_back(sf::Color(0x00, 0x00, 0x00)); // black
-    m_AsciiColors.push_back(sf::Color(0xff, 0xff, 0xff)); // white
+    m_AsciiColors.push_back(sf::Color(0xc0, 0xc0, 0xc0)); // white
     m_AsciiColors.push_back(sf::Color(0xff, 0xff, 0xff)); // bright white
-    m_AsciiColors.push_back(sf::Color(0xff, 0x00, 0x00)); // red
+    m_AsciiColors.push_back(sf::Color(0x80, 0x00, 0x00)); // red
     m_AsciiColors.push_back(sf::Color(0xff, 0x00, 0x00)); // bright red
-    m_AsciiColors.push_back(sf::Color(0x00, 0x00, 0xff)); // blue
+    m_AsciiColors.push_back(sf::Color(0x00, 0x00, 0x80)); // blue
     m_AsciiColors.push_back(sf::Color(0x00, 0x00, 0xff)); // bright blue
-    m_AsciiColors.push_back(sf::Color(0x00, 0xff, 0x00)); // green
+    m_AsciiColors.push_back(sf::Color(0x00, 0x80, 0x00)); // green
     m_AsciiColors.push_back(sf::Color(0x00, 0xff, 0x00)); // bright green
-    m_AsciiColors.push_back(sf::Color(0x00, 0xff, 0xff)); // cyan
+    m_AsciiColors.push_back(sf::Color(0x00, 0x80, 0x80)); // cyan
     m_AsciiColors.push_back(sf::Color(0x00, 0xff, 0xff)); // bright cyan
-    m_AsciiColors.push_back(sf::Color(0xff, 0x00, 0xff)); // magenta
+    m_AsciiColors.push_back(sf::Color(0x80, 0x00, 0x80)); // magenta
     m_AsciiColors.push_back(sf::Color(0xff, 0x00, 0xff)); // bright magenta
-    m_AsciiColors.push_back(sf::Color(0xff, 0xff, 0x00)); // yellow
+    m_AsciiColors.push_back(sf::Color(0x80, 0x80, 0x00)); // yellow
     m_AsciiColors.push_back(sf::Color(0xff, 0xff, 0x00)); // bright yellow
 
     return true;
@@ -159,12 +169,27 @@ bool Engine::initTileArt()
 
 bool Engine::initMapTiles()
 {
+    //note : the first tile should always be a black/black/blank tile as empty space
+
     MapTile newtile;
 
+    //tile 0
+    newtile.m_Name = "empty space";
+    newtile.m_TileID = 0;
+    newtile.m_FGColor = COLOR_BLACK;
+    newtile.m_BGColor = COLOR_BLACK;
+    m_MapTiles.push_back(newtile);
 
+    //tile 1
+    newtile = MapTile();
     newtile.m_Name = "floor";
     newtile.m_TileID = int('.');
+    m_MapTiles.push_back(newtile);
 
+    //tile 2
+    newtile = MapTile();
+    newtile.m_Name = "wall";
+    newtile.m_TileID = int(219);
     m_MapTiles.push_back(newtile);
 }
 
@@ -180,6 +205,9 @@ bool Engine::initPlayer()
 void Engine::mainLoop()
 {
     bool quit = false;
+
+    //create testmap
+    testmap = new MapChunk;
 
     //frame loop
     while(!quit)
@@ -233,6 +261,7 @@ void Engine::mainLoop()
         }
 
         //draw
+        drawMap();
         drawPlayer();
 
         //update and display screen
@@ -289,3 +318,34 @@ void Engine::drawPlayer()
     drawTile(ppos.x, ppos.y, m_Player->getTileID(), m_Player->getFGColor(), m_Player->getBGColor());
 }
 
+void Engine::drawMap()
+{
+    for(int i = 0; i < testmap->getDimensions().y; i++)
+    {
+        for(int n = 0; n < testmap->getDimensions().x; n++)
+        {
+            MapTile *ttile = getMapTile( testmap->getTile(n, i));
+
+            drawTile(n, i, ttile->getTileID(), ttile->getFGColor(), ttile->getBGColor());
+
+        }
+    }
+}
+
+///////////////////////////////////////////////////////////////////
+MapTile *Engine::getMapTile(int tileid)
+{
+    if(m_MapTiles.empty())
+    {
+        std::cout << "ERROR!  There are no maptiles stored in memory!!\n";
+        return NULL;
+    }
+
+    if(tileid < 0 || tileid >= int(m_MapTiles.size()) )
+    {
+        std::cout << "Error getting tile " << tileid << ", outside range of available map tiles!\n";
+        return &m_MapTiles[0];
+    }
+
+    return &m_MapTiles[tileid];
+}

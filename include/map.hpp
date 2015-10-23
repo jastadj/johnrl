@@ -23,10 +23,11 @@ private:
     std::vector < std::vector< int > > m_MapData;
 
 public:
-    MapChunk();
+    MapChunk(int width = MAPWIDTH, int height = MAPHEIGHT);
     ~MapChunk();
 
     bool mapDataValid(int x, int y);
+    sf::Vector2i getDimensions();
 
     int getTile(int x, int y);
     void setTile(int x, int y, int tileid);

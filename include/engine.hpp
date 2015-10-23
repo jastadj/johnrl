@@ -42,9 +42,12 @@ private:
     std::vector< std::vector< sf::Texture> > m_TileTextures;
     std::vector <std::vector< std::vector< sf::Sprite> > > m_TileSprites;
     std::vector< MapTile > m_MapTiles;
+    MapTile *getMapTile(int tilenum);
 
     //game objects
+    long m_Seed;
     Player *m_Player;
+    MapChunk *testmap;
 
     //loops
     void mainLoop();
@@ -54,6 +57,7 @@ private:
     void drawTile(int x, int y, char ch, int fgcolor = 1, int bgcolor = 0);
     void drawString(int x, int y, std::string tstring, int fgcolor = 1, int bgcolor = 0);
     void drawPlayer();
+    void drawMap();
 
 public:
     ~Engine();

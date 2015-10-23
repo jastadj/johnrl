@@ -3,9 +3,11 @@
 #include <string>
 #include <iostream>
 
-//map tiles
+///////////////////////////////////////////////////////////////
+// MAP TILE
 MapTile::MapTile()
 {
+
 
 }
 
@@ -16,14 +18,31 @@ MapTile::~MapTile()
 
 ///////////////////////////////////////////////////////////////
 // MAP CHUNK
-MapChunk::MapChunk()
+MapChunk::MapChunk(int width, int height)
 {
+    //resize array
+    m_MapData.resize(height);
+    for(int i = 0; i < int(m_MapData.size()); i++) m_MapData[i].resize(width);
+
+    fillMap(1);
+
 
 }
 
 MapChunk::~MapChunk()
 {
 
+}
+
+sf::Vector2i MapChunk::getDimensions()
+{
+    if(m_MapData.empty())
+    {
+        std::cout << "Error getting map dimensions, map data is empty!\n";
+        return sf::Vector2i(0,0);
+    }
+
+    else return sf::Vector2i( int(m_MapData[0].size()), int(m_MapData.size()) );
 }
 
 bool MapChunk::mapDataValid(int x, int y)
@@ -53,4 +72,15 @@ int MapChunk::getTile(int x, int y)
     if(!mapDataValid(x, y)) return 0;
 
     else return m_MapData[y][x];
+}
+
+void MapChunk::fillMap(int tileid)
+{
+    for(int i = 0; i < int(m_MapData.size()); i++)
+    {
+        for(int n = 0; n < int(m_MapData[0].size()); n++)
+        {
+            m_MapData[i][n] = tileid;
+        }
+    }
 }
