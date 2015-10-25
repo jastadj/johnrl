@@ -3,6 +3,8 @@
 #include <string>
 #include <iostream>
 
+#include "engine.hpp"
+
 ///////////////////////////////////////////////////////////////
 // MAP TILE
 MapTile::MapTile()
@@ -103,6 +105,13 @@ void MapChunk::fillMap(int tileid)
     }
 }
 
+sf::Vector2i MapChunk::getRandomValidPosition()
+{
+    sf::Vector2i mapdim = getDimensions();
+
+    return sf::Vector2i(rand()%mapdim.x, rand()%mapdim.y);
+}
+
 void MapChunk::setTileRandom(int x, int y, int tileidstart, int tileidend)
 {
     if(!mapDataValid(x, y))
@@ -112,4 +121,32 @@ void MapChunk::setTileRandom(int x, int y, int tileidstart, int tileidend)
     }
 
     m_MapData[y][x] = rand()%(tileidend - tileidstart + 1) + tileidstart;
+}
+
+bool MapChunk::addMonster(int monsterid, int x, int y)
+{
+    Engine *eptr = NULL;
+    eptr = Engine::getInstance();
+
+    if(monsterid < 0 || monsterid >= eptr->getMonsterDBSize())
+    {
+        std::cout << "Error adding monster to map, monster id outsize of bounds.  Id = " << monsterid << std::endl;
+        std::cout << "Total monsters in DB list : " << eptr->getMonsterDBSize() << std::endl;
+        return false;
+    }
+
+    Monster *newmonster = new Monster();
+    *newmonster = eptr->copyMonsterFromDB(monsterid);
+
+    newmonster->setPosition(x, y);
+
+    m_MapMonsters.push_back(newmonster);
+
+
+    return true;
+}
+
+bool MapChunk::addMonster(int monsterid, sf::Vector2i pos)
+{
+    return addMonster(monsterid, pos.x, pos.y);
 }

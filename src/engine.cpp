@@ -51,11 +51,12 @@ void Engine::start()
     if(initMapTiles()) std::cout << "done.\n";
     else std::cout << "failed.\n";
 
-    //init player
-    std::cout << "Initializing player...";
-    if(initPlayer()) std::cout << "done.\n";
+    std::cout << "Initializing monster database list...";
+    if(initMonsters()) std::cout << "done.\n";
     else std::cout << "failed.\n";
 
+    std::cout << "Starting new game.\n";
+    newGame();
 
     //start mainloop
     std::cout << "Starting main loop...\n";
@@ -276,6 +277,26 @@ bool Engine::initMapTiles()
     newtile.m_FGColor = COLOR_B_GREEN;
     m_MapTiles.push_back(newtile);
     //**********END GRASS TILES***********
+
+    return true;
+}
+
+bool Engine::initMonsters()
+{
+    Monster newmonster;
+    newmonster.m_Name = "unicorn";
+    newmonster.m_TileID = int('U');
+    newmonster.m_FGColor = COLOR_YELLOW;
+    m_MonsterDB.push_back(newmonster);
+
+    return true;
+}
+
+bool Engine::initMap()
+{
+    testmap = new MapChunk;
+
+    return true;
 }
 
 bool Engine::initPlayer()
@@ -287,12 +308,34 @@ bool Engine::initPlayer()
     return true;
 }
 
+bool Engine::newGame()
+{
+    //start new random seed
+    m_Seed = time(NULL);
+    srand(m_Seed);
+    std::cout << "Randomizing seed : " << m_Seed << std::endl;
+
+    //init map
+    std::cout << "Initializing map...";
+    if(initMap()) std::cout << "done.\n";
+    else std::cout << "failed.\n";
+
+    //init player
+    std::cout << "Initializing player...";
+    if(initPlayer()) std::cout << "done.\n";
+    else std::cout << "failed.\n";
+
+    //create unicorn
+    testmap->addMonster(0, testmap->getRandomValidPosition());
+
+    //randomize player starting position
+    m_Player->setPosition(testmap->getRandomValidPosition());
+
+}
+
 void Engine::mainLoop()
 {
     bool quit = false;
-
-    //create testmap
-    testmap = new MapChunk;
 
     //frame loop
     while(!quit)
@@ -348,6 +391,7 @@ void Engine::mainLoop()
         //draw
         drawMap();
         drawPlayer();
+        drawMonsters();
 
         //update and display screen
         m_Screen->display();
@@ -417,6 +461,17 @@ void Engine::drawMap()
     }
 }
 
+void Engine::drawMonsters()
+{
+    for(int i = 0; i < int(testmap->getMapMonsters()->size()); i++)
+    {
+        Monster *tmonster = (*testmap->getMapMonsters())[i];
+
+        drawTile(tmonster->getPosition().x, tmonster->getPosition().y, tmonster->getTileID(), tmonster->getFGColor(),
+                 tmonster->getBGColor());
+    }
+}
+
 ///////////////////////////////////////////////////////////////////
 MapTile *Engine::getMapTile(int tileid)
 {
@@ -434,3 +489,16 @@ MapTile *Engine::getMapTile(int tileid)
 
     return &m_MapTiles[tileid];
 }
+
+///////////////////////////////////////////////////////////////////
+Monster Engine::copyMonsterFromDB(int monsterid)
+{
+    if(monsterid < 0 || monsterid >= getMonsterDBSize())
+    {
+        std::cout << "Error copying monster, monster ID out of range!\n";
+        return m_MonsterDB[0];
+    }
+
+    return m_MonsterDB[monsterid];
+}
+
