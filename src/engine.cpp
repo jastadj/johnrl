@@ -298,6 +298,9 @@ bool Engine::initMonsters()
 
 bool Engine::initItems()
 {
+    Item *newitem = new Container();
+    newitem->m_Name = "water bottle";
+    m_ItemDB.push_back(newitem);
 
 }
 

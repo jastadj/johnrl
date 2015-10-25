@@ -11,6 +11,7 @@
 #include "player.hpp"
 #include "monster.hpp"
 #include "item.hpp"
+#include "container.hpp"
 
 class Engine
 {
