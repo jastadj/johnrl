@@ -50,6 +50,7 @@
 		<Unit filename="include/engine.hpp" />
 		<Unit filename="include/gameobj.hpp" />
 		<Unit filename="include/item.hpp" />
+		<Unit filename="include/itemtypes.hpp" />
 		<Unit filename="include/map.hpp" />
 		<Unit filename="include/monster.hpp" />
 		<Unit filename="include/player.hpp" />

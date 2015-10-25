@@ -137,8 +137,9 @@ bool MapChunk::addMonster(int monsterid, int x, int y)
         return false;
     }
 
-    Monster *newmonster = new Monster();
-    *newmonster = eptr->copyMonsterFromDB(monsterid);
+    Monster *newmonster = NULL;
+    //*newmonster = eptr->copyMonsterFromDB(monsterid);
+    newmonster = eptr->createMonster(monsterid);
 
     newmonster->setPosition(x, y);
 

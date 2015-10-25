@@ -10,8 +10,7 @@
 #include "map.hpp"
 #include "player.hpp"
 #include "monster.hpp"
-#include "item.hpp"
-#include "container.hpp"
+#include "itemtypes.hpp"
 
 class Engine
 {
@@ -29,6 +28,16 @@ private:
     int m_TermCurrentFGColor;
     int m_TermCurrentBGColor;
     sf::Vector2f m_TermCurrentCursorPos;
+
+    //viewport
+    sf::IntRect m_Viewport;
+    sf::Vector2i m_ViewportPosition;
+
+    bool posInViewport(int x, int y);
+    bool posInViewport(sf::Vector2i pos);
+    void centerViewport(int x, int y);
+    void centerViewport(sf::Vector2i pos) { centerViewport(pos.x, pos.y);}
+
 
     //init
     bool initScreen();
@@ -61,15 +70,19 @@ private:
 
     //loops
     void mainLoop();
+    void showInventory();
 
     //draw
     void drawTile(int x, int y, int tilenum, int fgcolor = 1, int bgcolor = 0);
     void drawTile(int x, int y, char ch, int fgcolor = 1, int bgcolor = 0);
+    void drawTileInViewport(int x, int y, int tilenum, int fgcolor = 1, int bgcolor = 0);
+    //void drawTileInViewport(int x, int y, char ch, int fgcolor = 1, int bgcolor = 0);
     void drawString(int x, int y, std::string tstring, int fgcolor = 1, int bgcolor = 0);
     void drawPlayer();
     void drawMap();
     void drawMonsters();
     void drawItems();
+    void drawStatus();
 
 public:
     ~Engine();
@@ -83,7 +96,10 @@ public:
     void start();
 
     int getMonsterDBSize() { return int(m_MonsterDB.size()); }
-    Monster copyMonsterFromDB(int monsterid);
+    Monster *createMonster(int monsterid);
+
+    int getItemDBSize() { return int(m_ItemDB.size()); }
+    Item *createItem(int itemid);
 
 };
 

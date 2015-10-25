@@ -3,6 +3,7 @@
 //debug
 #include <iostream>
 #include <string>
+#include <sstream>
 #include <cmath>
 
 Engine *Engine::onlyinstance = NULL;
@@ -24,6 +25,10 @@ Engine::Engine()
     m_ScreenTilesHeight = 25;
     m_TermCurrentBGColor = COLOR_BLACK;
     m_TermCurrentFGColor = COLOR_WHITE;
+
+    m_Viewport.width = 41;
+    m_Viewport.height = 25;
+    m_ViewportPosition = sf::Vector2i(0,0);
 
     //set seed
     m_Seed = long(time(NULL));
@@ -343,6 +348,9 @@ bool Engine::newGame()
     //randomize player starting position
     m_Player->setPosition(testmap->getRandomValidPosition());
 
+    //add water bottle to player
+    m_Player->addToInventory( createItem(0));
+
 }
 
 void Engine::mainLoop()
@@ -358,6 +366,8 @@ void Engine::mainLoop()
         //clear screen
         m_Screen->clear();
 
+
+
         //handle events
         while(m_Screen->pollEvent(event))
         {
@@ -365,6 +375,7 @@ void Engine::mainLoop()
             else if(event.type == sf::Event::KeyPressed)
             {
                 if(event.key.code == sf::Keyboard::Escape) quit = true;
+                else if(event.key.code == sf::Keyboard::I) showInventory();
                 else if(event.key.code == sf::Keyboard::Left || event.key.code == sf::Keyboard::Numpad4)
                 {
                     m_Player->walkDir(DIR_WEST);
@@ -400,10 +411,14 @@ void Engine::mainLoop()
             }
         }
 
+        //center viewport on player
+        centerViewport(m_Player->getPosition());
+
         //draw
         drawMap();
         drawPlayer();
         drawMonsters();
+        drawStatus();
 
         //update and display screen
         m_Screen->display();
@@ -413,6 +428,35 @@ void Engine::mainLoop()
 
 /////////////////////////////////////////////////////////////////////////////////
 //  DRAW
+bool Engine::posInViewport(int x, int y)
+{
+    if(x < m_Viewport.left || y < m_Viewport.top ||
+       x >= m_Viewport.left + m_Viewport.width || y >= m_Viewport.top + m_Viewport.height)
+    {
+         return false;
+    }
+
+    return true;
+}
+
+void Engine::centerViewport(int x, int y)
+{
+    m_Viewport.left = x - m_Viewport.width/2;
+    m_Viewport.top = y - m_Viewport.height/2;
+
+    //if map moves off viewport, keep map in view
+    if(m_Viewport.left < 0) m_Viewport.left = 0;
+    else if(m_Viewport.left + m_Viewport.width >= testmap->getDimensions().x) m_Viewport.left = testmap->getDimensions().x - m_Viewport.width;
+
+    if(m_Viewport.top < 0) m_Viewport.top = 0;
+    else if(m_Viewport.top + m_Viewport.height >= testmap->getDimensions().y) m_Viewport.top = testmap->getDimensions().y - m_Viewport.height;
+}
+
+bool Engine::posInViewport(sf::Vector2i pos)
+{
+    return posInViewport(pos.x, pos.y);
+}
+
 void Engine::drawTile(int x, int y, int tilenum, int fgcolor, int bgcolor)
 {
     //assuming color black = 0, dont do anything
@@ -439,6 +483,14 @@ void Engine::drawTile(int x, int y, char ch, int fgcolor, int bgcolor)
     drawTile(x, y, int(ch), fgcolor, bgcolor);
 }
 
+void Engine::drawTileInViewport(int x, int y, int tilenum, int fgcolor, int bgcolor)
+{
+    if(posInViewport(x,y))
+    {
+        drawTile(x - m_Viewport.left, y - m_Viewport.top, tilenum, fgcolor, bgcolor);
+    }
+}
+
 void Engine::drawString(int x, int y, std::string tstring, int fgcolor, int bgcolor)
 {
     sf::Vector2i cursorpos = sf::Vector2i(x,y);
@@ -456,18 +508,20 @@ void Engine::drawPlayer()
 
     sf::Vector2i ppos = m_Player->getPosition();
 
-    drawTile(ppos.x, ppos.y, m_Player->getTileID(), m_Player->getFGColor(), m_Player->getBGColor());
+    drawTileInViewport(ppos.x, ppos.y, m_Player->getTileID(), m_Player->getFGColor(), m_Player->getBGColor());
 }
 
 void Engine::drawMap()
 {
+
     for(int i = 0; i < testmap->getDimensions().y; i++)
     {
         for(int n = 0; n < testmap->getDimensions().x; n++)
         {
             MapTile *ttile = getMapTile( testmap->getTile(n, i));
 
-            drawTile(n, i, ttile->getTileID(), ttile->getFGColor(), ttile->getBGColor());
+            if(posInViewport(n, i))
+            drawTileInViewport(n, i, ttile->getTileID(), ttile->getFGColor(), ttile->getBGColor());
 
         }
     }
@@ -479,10 +533,80 @@ void Engine::drawMonsters()
     {
         Monster *tmonster = (*testmap->getMapMonsters())[i];
 
-        drawTile(tmonster->getPosition().x, tmonster->getPosition().y, tmonster->getTileID(), tmonster->getFGColor(),
+        if(posInViewport(tmonster->getPosition()))
+        drawTileInViewport(tmonster->getPosition().x, tmonster->getPosition().y, tmonster->getTileID(), tmonster->getFGColor(),
                  tmonster->getBGColor());
     }
 }
+
+void Engine::drawStatus()
+{
+    std::stringstream pname;
+    pname << "Name : " << m_Player->getName();
+    drawString(50, 2, pname.str());
+}
+
+///////////////////////////////////////////////////////////////////
+
+void Engine::showInventory()
+{
+    bool quit = false;
+
+    std::vector< Item*> *inv = m_Player->getInventory();
+
+    while(!quit)
+    {
+        m_Screen->clear();
+
+        sf::Event event;
+
+        while(m_Screen->pollEvent(event))
+        {
+            if(event.type == sf::Event::KeyPressed) quit = true;
+        }
+
+        //draw
+
+
+
+        if(inv->empty())
+        {
+            drawString(0,0,"You have nothing!\n");
+        }
+        else
+        {
+            drawString(0,0, "You are carrying:");
+            drawString(0,1, "-----------------");
+
+            for(int i = 0; i < int(inv->size()); i++)
+            {
+                std::stringstream istring;
+
+                istring << (*inv)[i]->getName();
+
+                //if item is a container
+                if( (*inv)[i]->getType() == OBJ_ITEM_CONTAINER)
+                {
+                    //get container pointer
+                    Container *cptr = NULL;
+                    cptr = dynamic_cast<Container*>((*inv)[i]);
+
+                    //if container is empty
+                    if(cptr->getInventory()->empty()) istring << " (empty)";
+                }
+
+                drawString(0, i+2, istring.str());
+            }
+        }
+
+
+
+        //update
+        m_Screen->display();
+    }
+
+}
+
 
 ///////////////////////////////////////////////////////////////////
 MapTile *Engine::getMapTile(int tileid)
@@ -503,14 +627,42 @@ MapTile *Engine::getMapTile(int tileid)
 }
 
 ///////////////////////////////////////////////////////////////////
-Monster Engine::copyMonsterFromDB(int monsterid)
+Monster *Engine::createMonster(int monsterid)
 {
     if(monsterid < 0 || monsterid >= getMonsterDBSize())
     {
         std::cout << "Error copying monster, monster ID out of range!\n";
-        return *m_MonsterDB[0];
+        return NULL;
     }
 
-    return *m_MonsterDB[monsterid];
+    Monster *newmonster = new Monster();
+    *newmonster = *m_MonsterDB[monsterid];
+
+    return newmonster;
 }
 
+Item *Engine::createItem(int itemid)
+{
+    if(itemid < 0 || itemid > getItemDBSize())
+    {
+        std::cout << "Error creating item.  Item ID is out of range!\n";
+        return NULL;
+    }
+
+    Item *newitem = NULL;
+
+    //determine which type to create
+    switch( m_ItemDB[itemid]->getType())
+    {
+    case OBJ_ITEM_CONTAINER:
+        newitem = new Container();
+        *newitem = *m_ItemDB[itemid];
+        break;
+
+    default:
+        std::cout << "Error creating item, unrecognized type!\n";
+        break;
+    }
+
+    return newitem;
+}
