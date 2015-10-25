@@ -51,6 +51,7 @@
 		<Unit filename="include/gameobj.hpp" />
 		<Unit filename="include/item.hpp" />
 		<Unit filename="include/itemtypes.hpp" />
+		<Unit filename="include/liquid.hpp" />
 		<Unit filename="include/map.hpp" />
 		<Unit filename="include/monster.hpp" />
 		<Unit filename="include/player.hpp" />
@@ -60,6 +61,7 @@
 		<Unit filename="src/engine.cpp" />
 		<Unit filename="src/gameobj.cpp" />
 		<Unit filename="src/item.cpp" />
+		<Unit filename="src/liquid.cpp" />
 		<Unit filename="src/main.cpp" />
 		<Unit filename="src/map.cpp" />
 		<Unit filename="src/monster.cpp" />

@@ -45,6 +45,7 @@ private:
     bool initMapTiles();
     bool initMonsters();
     bool initItems();
+    bool initLiquids();
     bool initMap();
     bool initPlayer();
     bool newGame();
@@ -62,6 +63,7 @@ private:
     MapTile *getMapTile(int tilenum);
     std::vector < Monster* > m_MonsterDB;
     std::vector < Item* > m_ItemDB;
+    std::vector < Liquid*> m_Liquids;
 
     //game objects
     long m_Seed;
@@ -70,7 +72,9 @@ private:
 
     //loops
     void mainLoop();
+    void playerDeath();
     void showInventory();
+    //Item *selectItemFromInventory(int ifilter = OBJ_TOTAL);
 
     //draw
     void drawTile(int x, int y, int tilenum, int fgcolor = 1, int bgcolor = 0);

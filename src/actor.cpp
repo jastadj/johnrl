@@ -1,4 +1,5 @@
 #include "actor.hpp"
+#include "player.hpp"
 
 #include <string>
 #include <iostream>
@@ -15,6 +16,12 @@ Actor::~Actor()
 
 }
 
+bool Actor::isAlive()
+{
+    if(m_HealthCurrent <= 0) return false;
+
+    return true;
+}
 bool Actor::walkDir(int direction)
 {
     sf::Vector2i newpos = m_Position;
@@ -59,4 +66,13 @@ bool Actor::walkDir(int direction)
     }
 
     m_Position = newpos;
+
+    //if moving player, increase turn
+    if(this->getType() == OBJ_PLAYER)
+    {
+        Player *tactor = NULL;
+        tactor = dynamic_cast<Player*>(this);
+        if(tactor != NULL) tactor->doTurn();
+    }
 }
+

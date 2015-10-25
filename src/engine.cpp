@@ -60,6 +60,10 @@ void Engine::start()
     if(initMonsters()) std::cout << "done.\n";
     else std::cout << "failed.\n";
 
+    std::cout << "Initializing liquids...";
+    if(initLiquids()) std::cout << "done.\n";
+    else std::cout << "failed.\n";
+
     std::cout << "Initializing item database list...";
     if(initItems()) std::cout << "done.\n";
     else std::cout << "failed.\n";
@@ -71,6 +75,33 @@ void Engine::start()
     std::cout << "Starting main loop...\n";
     mainLoop();
 
+    //if player died...
+    if(!m_Player->isAlive()) playerDeath();
+
+}
+
+void Engine::playerDeath()
+{
+    bool quit = false;
+
+    while(!quit)
+    {
+        sf::Event event;
+
+        m_Screen->clear();
+
+        while(m_Screen->pollEvent(event))
+        {
+            if(event.type == sf::Event::KeyPressed)
+            {
+                if(event.key.code == sf::Keyboard::Escape) quit = true;
+            }
+        }
+
+        drawString(0,0, "You are dead!");
+
+        m_Screen->display();
+    }
 }
 
 bool Engine::initScreen()
@@ -303,10 +334,23 @@ bool Engine::initMonsters()
 
 bool Engine::initItems()
 {
-    Item *newitem = new Container();
-    newitem->m_Name = "water bottle";
-    m_ItemDB.push_back(newitem);
+    Item *newitem = new ContainerLiquid();
+    ContainerLiquid *cptr = dynamic_cast<ContainerLiquid*>(newitem);
+    cptr->m_Name = "water bottle";
+    cptr->setMaxVolume(16);
+    m_ItemDB.push_back(cptr);
 
+    return true;
+}
+
+bool Engine::initLiquids()
+{
+    Liquid *newliquid = new Liquid;
+    newliquid->setName("water");
+    newliquid->setColor(COLOR_BLUE);
+    m_Liquids.push_back(newliquid);
+
+    return true;
 }
 
 bool Engine::initMap()
@@ -321,6 +365,10 @@ bool Engine::initPlayer()
     if(m_Player != NULL) delete m_Player;
 
     m_Player = new Player;
+
+    m_Player->m_Name = "test player";
+    m_Player->setMaxHealth(10);
+    m_Player->setCurrentHealth(m_Player->getMaxHealth());
 
     return true;
 }
@@ -349,7 +397,10 @@ bool Engine::newGame()
     m_Player->setPosition(testmap->getRandomValidPosition());
 
     //add water bottle to player
-    m_Player->addToInventory( createItem(0));
+    Item *pitem = createItem(0);
+    ContainerLiquid *cptr = dynamic_cast<ContainerLiquid*>(pitem);
+    cptr->fillWithLiquid(m_Liquids[0]);
+    m_Player->addToInventory(pitem);
 
 }
 
@@ -422,6 +473,11 @@ void Engine::mainLoop()
 
         //update and display screen
         m_Screen->display();
+
+        if(!m_Player->isAlive())
+        {
+            return;
+        }
 
     }
 }
@@ -544,6 +600,22 @@ void Engine::drawStatus()
     std::stringstream pname;
     pname << "Name : " << m_Player->getName();
     drawString(50, 2, pname.str());
+
+    std::stringstream pturns;
+    pturns << "Turns : " << m_Player->getTurns();
+    drawString(50,3, pturns.str());
+
+    std::stringstream phealth;
+    phealth << "HP : " << m_Player->getCurrentHealth() << "/" << m_Player->getMaxHealth();
+    drawString(50,4, phealth.str());
+
+    //if player needs to drink
+    if(m_Player->getHydrationLevel() <= 3)
+    {
+        //if player is getting thirsty
+        if(m_Player->getHydrationLevel() >= 2) drawString(50, 5, "Thirsty", COLOR_BLUE);
+        else drawString(50,5, "Dehydrated", COLOR_RED);
+    }
 }
 
 ///////////////////////////////////////////////////////////////////
@@ -551,6 +623,8 @@ void Engine::drawStatus()
 void Engine::showInventory()
 {
     bool quit = false;
+
+    int selecteditem = 0;
 
     std::vector< Item*> *inv = m_Player->getInventory();
 
@@ -562,9 +636,32 @@ void Engine::showInventory()
 
         while(m_Screen->pollEvent(event))
         {
-            if(event.type == sf::Event::KeyPressed) quit = true;
+            if(event.type == sf::Event::KeyPressed)
+            {
+                if(event.key.code == sf::Keyboard::Escape) quit = true;
+                else if(event.key.code == sf::Keyboard::Down) selecteditem++;
+                else if(event.key.code == sf::Keyboard::Up) selecteditem--;
+                else if(event.key.code == sf::Keyboard::Return)
+                {
+                    //if using liquid container
+                    if( (*inv)[selecteditem]->getType() == OBJ_ITEM_CONTAINER_LIQUID)
+                    {
+                        ContainerLiquid *cptr = dynamic_cast<ContainerLiquid*>( (*inv)[selecteditem]);
+                        //if liquid container is not empty
+                        if(!cptr->isEmpty() )
+                        {
+                            if(m_Player->drink(cptr->getLiquidType()))
+                            {
+                                cptr->removeLiquid(1);
+                            }
+                        }
+                    }
+                }
+            }
         }
 
+        if(selecteditem < 0) selecteditem = int(inv->size()-1);
+        else if(selecteditem >= int(inv->size())) selecteditem = 0;
         //draw
 
 
@@ -594,8 +691,22 @@ void Engine::showInventory()
                     //if container is empty
                     if(cptr->getInventory()->empty()) istring << " (empty)";
                 }
+                else if( (*inv)[i]->getType() == OBJ_ITEM_CONTAINER_LIQUID)
+                {
+                    ContainerLiquid *cptr = dynamic_cast<ContainerLiquid*>( (*inv)[i]);
+                    if(cptr->getCurrentVolume() <= 0) istring << " (empty)";
+                    else
+                    {
+                        istring << " (" << cptr->getCurrentVolume() << "/" << cptr->getMaxVolume() << " of " << cptr->getLiquidType()->getName() << ")";
 
-                drawString(0, i+2, istring.str());
+                    }
+                }
+
+                if(selecteditem == i)
+                {
+                    drawString(0, i+2, istring.str(), COLOR_BLACK, COLOR_WHITE);
+                }
+                else drawString(0, i+2, istring.str());
             }
         }
 
@@ -658,7 +769,10 @@ Item *Engine::createItem(int itemid)
         newitem = new Container();
         *newitem = *m_ItemDB[itemid];
         break;
-
+    case OBJ_ITEM_CONTAINER_LIQUID:
+        newitem = new ContainerLiquid();
+        *newitem = *m_ItemDB[itemid];
+        break;
     default:
         std::cout << "Error creating item, unrecognized type!\n";
         break;

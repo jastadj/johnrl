@@ -6,7 +6,7 @@
 
 class Actor: public GameObj
 {
-private:
+protected:
 
     int m_HealthMax;
     int m_HealthCurrent;
@@ -19,8 +19,12 @@ public:
     virtual int getType()=0;
 
     //status
+    virtual bool isAlive();
     int getMaxHealth() { return m_HealthMax;}
+    void setMaxHealth(int nmaxhealth) { m_HealthMax = nmaxhealth;}
     int getCurrentHealth() { return m_HealthCurrent;}
+    void setCurrentHealth(int ncurhealth) { m_HealthCurrent = ncurhealth;}
+
 
     //inventory
     std::vector< Item*> *getInventory() { return &m_Inventory;}
