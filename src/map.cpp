@@ -40,7 +40,9 @@ MapChunk::MapChunk(int width, int height)
 
 MapChunk::~MapChunk()
 {
-
+    //delete monsters
+    for(int i = 0; i < int(m_MapMonsters.size()); i++) delete m_MapMonsters[i];
+    m_MapMonsters.clear();
 }
 
 sf::Vector2i MapChunk::getDimensions()

@@ -55,6 +55,10 @@ void Engine::start()
     if(initMonsters()) std::cout << "done.\n";
     else std::cout << "failed.\n";
 
+    std::cout << "Initializing item database list...";
+    if(initItems()) std::cout << "done.\n";
+    else std::cout << "failed.\n";
+
     std::cout << "Starting new game.\n";
     newGame();
 
@@ -174,107 +178,107 @@ bool Engine::initMapTiles()
 {
     //note : the first tile should always be a black/black/blank tile as empty space
 
-    MapTile newtile;
+    MapTile *newtile = new MapTile;
 
     //tile 0
-    newtile.m_Name = "empty space";
-    newtile.m_TileID = 0;
-    newtile.m_FGColor = COLOR_BLACK;
-    newtile.m_BGColor = COLOR_BLACK;
+    newtile->m_Name = "empty space";
+    newtile->m_TileID = 0;
+    newtile->m_FGColor = COLOR_BLACK;
+    newtile->m_BGColor = COLOR_BLACK;
     m_MapTiles.push_back(newtile);
 
     //tile 1
-    newtile = MapTile();
-    newtile.m_Name = "floor";
-    newtile.m_TileID = int('.');
+    newtile = new MapTile;
+    newtile->m_Name = "floor";
+    newtile->m_TileID = int('.');
     m_MapTiles.push_back(newtile);
 
     //tile 2
-    newtile = MapTile();
-    newtile.m_Name = "wall";
-    newtile.m_TileID = int(219);
+    newtile = new MapTile;
+    newtile->m_Name = "wall";
+    newtile->m_TileID = int(219);
     m_MapTiles.push_back(newtile);
 
     //**********START GRASS TILES***********
     //tile 3 - START GRASS TILES
-    newtile = MapTile();
-    newtile.m_Name = "grass";
-    newtile.m_TileID = int('.');
-    newtile.m_BGColor = COLOR_BLACK;
-    newtile.m_FGColor = COLOR_GREEN;
+    newtile = new MapTile;
+    newtile->m_Name = "grass";
+    newtile->m_TileID = int('.');
+    newtile->m_BGColor = COLOR_BLACK;
+    newtile->m_FGColor = COLOR_GREEN;
     m_MapTiles.push_back(newtile);
 
     //tile 4
-    newtile = MapTile();
-    newtile.m_Name = "grass";
-    newtile.m_TileID = int(',');
-    newtile.m_BGColor = COLOR_BLACK;
-    newtile.m_FGColor = COLOR_GREEN;
+    newtile = new MapTile;
+    newtile->m_Name = "grass";
+    newtile->m_TileID = int(',');
+    newtile->m_BGColor = COLOR_BLACK;
+    newtile->m_FGColor = COLOR_GREEN;
     m_MapTiles.push_back(newtile);
 
     //tile 5
-    newtile = MapTile();
-    newtile.m_Name = "grass";
-    newtile.m_TileID = int('`');
-    newtile.m_BGColor = COLOR_BLACK;
-    newtile.m_FGColor = COLOR_GREEN;
+    newtile = new MapTile;
+    newtile->m_Name = "grass";
+    newtile->m_TileID = int('`');
+    newtile->m_BGColor = COLOR_BLACK;
+    newtile->m_FGColor = COLOR_GREEN;
     m_MapTiles.push_back(newtile);
 
     //tile 6
-    newtile = MapTile();
-    newtile.m_Name = "grass";
-    newtile.m_TileID = int('\'');
-    newtile.m_BGColor = COLOR_BLACK;
-    newtile.m_FGColor = COLOR_GREEN;
+    newtile = new MapTile;
+    newtile->m_Name = "grass";
+    newtile->m_TileID = int('\'');
+    newtile->m_BGColor = COLOR_BLACK;
+    newtile->m_FGColor = COLOR_GREEN;
     m_MapTiles.push_back(newtile);
 
     //tile 7
-    newtile = MapTile();
-    newtile.m_Name = "grass";
-    newtile.m_TileID = int('\"');
-    newtile.m_BGColor = COLOR_BLACK;
-    newtile.m_FGColor = COLOR_GREEN;
+    newtile = new MapTile;
+    newtile->m_Name = "grass";
+    newtile->m_TileID = int('\"');
+    newtile->m_BGColor = COLOR_BLACK;
+    newtile->m_FGColor = COLOR_GREEN;
     m_MapTiles.push_back(newtile);
 
     //tile 8 - START LIGHT GRASS
-    newtile = MapTile();
-    newtile.m_Name = "grass";
-    newtile.m_TileID = int('.');
-    newtile.m_BGColor = COLOR_BLACK;
-    newtile.m_FGColor = COLOR_B_GREEN;
+    newtile = new MapTile;
+    newtile->m_Name = "grass";
+    newtile->m_TileID = int('.');
+    newtile->m_BGColor = COLOR_BLACK;
+    newtile->m_FGColor = COLOR_B_GREEN;
     m_MapTiles.push_back(newtile);
 
     //tile 9
-    newtile = MapTile();
-    newtile.m_Name = "grass";
-    newtile.m_TileID = int(',');
-    newtile.m_BGColor = COLOR_BLACK;
-    newtile.m_FGColor = COLOR_B_GREEN;
+    newtile = new MapTile;
+    newtile->m_Name = "grass";
+    newtile->m_TileID = int(',');
+    newtile->m_BGColor = COLOR_BLACK;
+    newtile->m_FGColor = COLOR_B_GREEN;
     m_MapTiles.push_back(newtile);
 
     //tile 10
-    newtile = MapTile();
-    newtile.m_Name = "grass";
-    newtile.m_TileID = int('`');
-    newtile.m_BGColor = COLOR_BLACK;
-    newtile.m_FGColor = COLOR_B_GREEN;
+    newtile = new MapTile;
+    newtile->m_Name = "grass";
+    newtile->m_TileID = int('`');
+    newtile->m_BGColor = COLOR_BLACK;
+    newtile->m_FGColor = COLOR_B_GREEN;
     m_MapTiles.push_back(newtile);
 
     //tile 11
-    newtile = MapTile();
-    newtile.m_Name = "grass";
-    newtile.m_TileID = int('\'');
-    newtile.m_BGColor = COLOR_BLACK;
-    newtile.m_FGColor = COLOR_B_GREEN;
+    newtile = new MapTile;
+    newtile->m_Name = "grass";
+    newtile->m_TileID = int('\'');
+    newtile->m_BGColor = COLOR_BLACK;
+    newtile->m_FGColor = COLOR_B_GREEN;
     m_MapTiles.push_back(newtile);
 
 
     //tile 12
-    newtile = MapTile();
-    newtile.m_Name = "grass";
-    newtile.m_TileID = int('\"');
-    newtile.m_BGColor = COLOR_BLACK;
-    newtile.m_FGColor = COLOR_B_GREEN;
+    newtile = new MapTile;
+    newtile->m_Name = "grass";
+    newtile->m_TileID = int('\"');
+    newtile->m_BGColor = COLOR_BLACK;
+    newtile->m_FGColor = COLOR_B_GREEN;
     m_MapTiles.push_back(newtile);
     //**********END GRASS TILES***********
 
@@ -283,13 +287,18 @@ bool Engine::initMapTiles()
 
 bool Engine::initMonsters()
 {
-    Monster newmonster;
-    newmonster.m_Name = "unicorn";
-    newmonster.m_TileID = int('U');
-    newmonster.m_FGColor = COLOR_YELLOW;
+    Monster *newmonster = new Monster;
+    newmonster->m_Name = "unicorn";
+    newmonster->m_TileID = int('U');
+    newmonster->m_FGColor = COLOR_YELLOW;
     m_MonsterDB.push_back(newmonster);
 
     return true;
+}
+
+bool Engine::initItems()
+{
+
 }
 
 bool Engine::initMap()
@@ -484,10 +493,10 @@ MapTile *Engine::getMapTile(int tileid)
     if(tileid < 0 || tileid >= int(m_MapTiles.size()) )
     {
         std::cout << "Error getting tile " << tileid << ", outside range of available map tiles!\n";
-        return &m_MapTiles[0];
+        return m_MapTiles[0];
     }
 
-    return &m_MapTiles[tileid];
+    return m_MapTiles[tileid];
 }
 
 ///////////////////////////////////////////////////////////////////
@@ -496,9 +505,9 @@ Monster Engine::copyMonsterFromDB(int monsterid)
     if(monsterid < 0 || monsterid >= getMonsterDBSize())
     {
         std::cout << "Error copying monster, monster ID out of range!\n";
-        return m_MonsterDB[0];
+        return *m_MonsterDB[0];
     }
 
-    return m_MonsterDB[monsterid];
+    return *m_MonsterDB[monsterid];
 }
 

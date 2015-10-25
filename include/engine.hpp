@@ -10,6 +10,7 @@
 #include "map.hpp"
 #include "player.hpp"
 #include "monster.hpp"
+#include "item.hpp"
 
 class Engine
 {
@@ -33,6 +34,7 @@ private:
     bool initTileArt();
     bool initMapTiles();
     bool initMonsters();
+    bool initItems();
     bool initMap();
     bool initPlayer();
     bool newGame();
@@ -46,15 +48,15 @@ private:
     int m_ScreenTilesHeight;
     std::vector< std::vector< sf::Texture> > m_TileTextures;
     std::vector <std::vector< std::vector< sf::Sprite> > > m_TileSprites;
-    std::vector< MapTile > m_MapTiles;
+    std::vector< MapTile* > m_MapTiles;
     MapTile *getMapTile(int tilenum);
-    std::vector < Monster > m_MonsterDB;
+    std::vector < Monster* > m_MonsterDB;
+    std::vector < Item* > m_ItemDB;
 
     //game objects
     long m_Seed;
     Player *m_Player;
     MapChunk *testmap;
-    std::vector< Monster*> m_Monsters;
 
     //loops
     void mainLoop();
@@ -66,6 +68,7 @@ private:
     void drawPlayer();
     void drawMap();
     void drawMonsters();
+    void drawItems();
 
 public:
     ~Engine();
