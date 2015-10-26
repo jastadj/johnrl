@@ -52,16 +52,16 @@ void Engine::start()
     if(initTileArt()) std::cout << "done.\n";
     else std::cout << "failed.\n";
 
+    std::cout << "Initializing liquids...";
+    if(initLiquids()) std::cout << "done.\n";
+    else std::cout << "failed.\n";
+
     std::cout << "Initializing map tiles...";
     if(initMapTiles()) std::cout << "done.\n";
     else std::cout << "failed.\n";
 
     std::cout << "Initializing monster database list...";
     if(initMonsters()) std::cout << "done.\n";
-    else std::cout << "failed.\n";
-
-    std::cout << "Initializing liquids...";
-    if(initLiquids()) std::cout << "done.\n";
     else std::cout << "failed.\n";
 
     std::cout << "Initializing item database list...";
@@ -318,6 +318,14 @@ bool Engine::initMapTiles()
     m_MapTiles.push_back(newtile);
     //**********END GRASS TILES***********
 
+    //tile 13
+    newtile = new MapTile;
+    newtile->m_Name = "water";
+    newtile->m_TileID = int('~');
+    newtile->m_FGColor = COLOR_B_BLUE;
+    newtile->setLiquid(m_Liquids[0]);
+    newtile->setWalkable(false);
+    m_MapTiles.push_back(newtile);
     return true;
 }
 
@@ -337,7 +345,7 @@ bool Engine::initItems()
     Item *newitem = new ContainerLiquid();
     ContainerLiquid *cptr = dynamic_cast<ContainerLiquid*>(newitem);
     cptr->m_Name = "water bottle";
-    cptr->setMaxVolume(16);
+    cptr->setMaxVolume(3);
     m_ItemDB.push_back(cptr);
 
     return true;
@@ -615,6 +623,10 @@ void Engine::drawStatus()
         //if player is getting thirsty
         if(m_Player->getHydrationLevel() >= 2) drawString(50, 5, "Thirsty", COLOR_BLUE);
         else drawString(50,5, "Dehydrated", COLOR_RED);
+    }
+    else if(m_Player->getHydrationLevel() == m_Player->getMaxHydrationLevel())
+    {
+        drawString(50,5, "Well Hydrated", COLOR_GREEN);
     }
 }
 

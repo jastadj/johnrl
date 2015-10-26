@@ -8,7 +8,7 @@ Player::Player()
 
     m_TurnCounter = 0;
 
-    m_MetabolismHydration = 20;
+    m_MetabolismHydration = 300;
 
     m_HydrationLevelMax = 10;
     m_HydrationLevel = 5;

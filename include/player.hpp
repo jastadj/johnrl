@@ -27,6 +27,7 @@ public:
     void doTurn();
 
     int getHydrationLevel() { return m_HydrationLevel;}
+    int getMaxHydrationLevel() { return m_HydrationLevelMax;}
     void setHydrationLevel(int nhydlevel) { m_HydrationLevel = nhydlevel;}
     bool drink(Liquid *ltype);
 

@@ -17,6 +17,8 @@ protected:
     int m_BGColor;
     int m_FGColor;
 
+    bool m_Walkable;
+
     sf::Vector2i m_Position;
 
 public:
@@ -33,6 +35,9 @@ public:
     sf::Vector2i getPosition() { return m_Position;}
     void setPosition(sf::Vector2i newpos) { m_Position = newpos;}
     void setPosition(int x, int y) { m_Position = sf::Vector2i(x, y);}
+
+    void setWalkable(bool nwalk) { m_Walkable = nwalk;}
+    bool isWalkable() { return m_Walkable;}
 
     friend class Engine;
 };

@@ -6,6 +6,8 @@ GameObj::GameObj()
     m_BGColor = COLOR_BLACK;
     m_FGColor = COLOR_WHITE;
     m_TileID = 63;
+
+    m_Walkable = true;
 }
 
 GameObj::~GameObj()

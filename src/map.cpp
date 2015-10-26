@@ -10,12 +10,19 @@
 MapTile::MapTile()
 {
 
-
+    m_Liquid = NULL;
 }
 
 MapTile::~MapTile()
 {
 
+}
+
+bool MapTile::setLiquid(Liquid *nliquid)
+{
+    if(nliquid == NULL) return false;
+
+    m_Liquid = nliquid;
 }
 
 ///////////////////////////////////////////////////////////////
@@ -35,6 +42,8 @@ MapChunk::MapChunk(int width, int height)
         }
     }
 
+    //add some water tiles
+    for(int i = 0; i < 10; i++) setTile(rand()%MAPWIDTH, rand()%MAPHEIGHT, 13);
 
 }
 

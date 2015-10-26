@@ -10,11 +10,18 @@ class MapTile: public GameObj
 {
 private:
 
+    Liquid *m_Liquid;
+
 public:
     MapTile();
     ~MapTile();
 
     int getType() { return OBJ_MAPTILE;}
+
+    bool setLiquid(Liquid *nliquid);
+    Liquid *getLiquid() { return m_Liquid;}
+    bool hasLiquid() { if(m_Liquid != NULL) return true;  else return false;}
+
 };
 
 class MapChunk
