@@ -749,6 +749,73 @@ MapTile *Engine::getMapTile(int tileid)
     return m_MapTiles[tileid];
 }
 
+bool Engine::validWalkableTile(int x, int y)
+{
+    sf::Vector2i mapdim = testmap->getDimensions();
+    if(x < 0 || y < 0 || x >= mapdim.x || y >= mapdim.y) return false;
+
+    MapTile *ttile = getMapTile( testmap->getTile(x,y) );
+    if(!ttile->isWalkable()) return false;
+
+    return true;
+}
+
+int Engine::getDirectionFromUser()
+{
+    bool quit = false;
+    int dir = DIR_NONE;
+
+    while(!quit)
+    {
+        sf::Event event;
+
+        //handle events
+        while(m_Screen->pollEvent(event))
+        {
+            if(event.type == sf::Event::KeyPressed)
+            {
+                if(event.key.code == sf::Keyboard::Left || event.key.code == sf::Keyboard::Numpad4)
+                {
+                    dir = DIR_WEST;
+                }
+                else if(event.key.code == sf::Keyboard::Right || event.key.code == sf::Keyboard::Numpad6)
+                {
+                    dir = DIR_EAST;
+                }
+                else if(event.key.code == sf::Keyboard::Up || event.key.code == sf::Keyboard::Numpad8)
+                {
+                    dir = DIR_NORTH;
+                }
+                else if(event.key.code == sf::Keyboard::Down || event.key.code == sf::Keyboard::Numpad2)
+                {
+                    dir = DIR_SOUTH;
+                }
+                else if(event.key.code == sf::Keyboard::Numpad1)
+                {
+                    dir = DIR_SW;
+                }
+                else if(event.key.code == sf::Keyboard::Numpad3)
+                {
+                    dir = DIR_SE;
+                }
+                else if(event.key.code == sf::Keyboard::Numpad7)
+                {
+                    dir = DIR_NW;
+                }
+                else if(event.key.code == sf::Keyboard::Numpad9)
+                {
+                    dir = DIR_NE;
+                }
+
+                quit = true;
+            }
+        }
+
+    }
+
+    return dir;
+}
+
 ///////////////////////////////////////////////////////////////////
 Monster *Engine::createMonster(int monsterid)
 {
@@ -792,3 +859,4 @@ Item *Engine::createItem(int itemid)
 
     return newitem;
 }
+

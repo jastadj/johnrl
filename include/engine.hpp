@@ -68,7 +68,7 @@ private:
     //game objects
     long m_Seed;
     Player *m_Player;
-    MapChunk *testmap;
+
 
     //loops
     void mainLoop();
@@ -104,6 +104,11 @@ public:
 
     int getItemDBSize() { return int(m_ItemDB.size()); }
     Item *createItem(int itemid);
+
+
+    MapChunk *testmap;
+    bool validWalkableTile(int x, int y);
+    int getDirectionFromUser();
 
 };
 

@@ -4,6 +4,7 @@
 #include <string>
 #include <iostream>
 
+#include "engine.hpp"
 
 Actor::Actor()
 {
@@ -24,6 +25,9 @@ bool Actor::isAlive()
 }
 bool Actor::walkDir(int direction)
 {
+    Engine *eptr = NULL;
+    eptr = Engine::getInstance();
+
     sf::Vector2i newpos = m_Position;
 
     switch(direction)
@@ -65,6 +69,12 @@ bool Actor::walkDir(int direction)
         break;
     }
 
+    //check that newpos is a valid walkable tile
+    if(!eptr->validWalkableTile(newpos.x, newpos.y))
+    {
+        return false;
+    }
+
     m_Position = newpos;
 
     //if moving player, increase turn
@@ -74,5 +84,7 @@ bool Actor::walkDir(int direction)
         tactor = dynamic_cast<Player*>(this);
         if(tactor != NULL) tactor->doTurn();
     }
+
+    return true;
 }
 
