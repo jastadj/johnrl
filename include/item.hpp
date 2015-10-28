@@ -12,6 +12,8 @@ public:
     virtual ~Item();
 
     virtual int getType()=0;
+
+    //virtual int getFGColor();
 };
 
 

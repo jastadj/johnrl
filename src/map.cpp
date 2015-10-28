@@ -23,6 +23,8 @@ bool MapTile::setLiquid(Liquid *nliquid)
     if(nliquid == NULL) return false;
 
     m_Liquid = nliquid;
+
+    return true;
 }
 
 ///////////////////////////////////////////////////////////////
@@ -161,4 +163,28 @@ bool MapChunk::addMonster(int monsterid, int x, int y)
 bool MapChunk::addMonster(int monsterid, sf::Vector2i pos)
 {
     return addMonster(monsterid, pos.x, pos.y);
+}
+
+bool MapChunk::addItem(int itemid, int x, int y)
+{
+    Engine *eptr = NULL;
+    eptr = Engine::getInstance();
+
+    if(itemid < 0 || itemid >= eptr->getItemDBSize())
+    {
+        std::cout << "Error in adding item to map : itemid not within valid range : " << itemid << std::endl;
+        return false;
+    }
+
+    Item *newitem = eptr->createItem(itemid);
+
+    m_MapItems.push_back(newitem);
+
+    return true;
+
+}
+
+bool MapChunk::addItem(int itemid, sf::Vector2i ipos)
+{
+    return addItem(itemid, ipos.x, ipos.y);
 }

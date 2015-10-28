@@ -69,13 +69,16 @@ private:
     long m_Seed;
     Player *m_Player;
 
+    //player actions
+    void playerDeath();
+    void showInventory();
+    void dropItemUI();
 
     //loops
     void mainLoop();
-    void playerDeath();
-    void showInventory();
+
     static std::vector<int> m_ItemFilterAll;
-    Item *selectItemFromInventory(std::vector<int> itemfilter = m_ItemFilterAll);
+    Item *selectItemFromInventory(std::string promptstr = "Select Item:", std::vector<int> itemfilter = m_ItemFilterAll);
 
     //draw
     void drawTile(int x, int y, int tilenum, int fgcolor = 1, int bgcolor = 0);
@@ -105,7 +108,7 @@ public:
 
     int getItemDBSize() { return int(m_ItemDB.size()); }
     Item *createItem(int itemid);
-
+    bool moveItem(Item *titem, std::vector<Item*> *isource, std::vector<Item*> *idest);
 
     MapChunk *testmap;
     bool validWalkableTile(int x, int y);

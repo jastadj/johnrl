@@ -14,6 +14,7 @@ public:
     ~Container();
 
     virtual int getType() {return OBJ_ITEM_CONTAINER;}
+    //virtual int getFGColor();
 
     virtual std::vector< Item*> *getInventory() { return &m_Inventory;}
 
@@ -34,6 +35,8 @@ public:
 
     int getType() {return OBJ_ITEM_CONTAINER_LIQUID;}
     Liquid *getLiquidType() { return m_LiquidType;}
+
+    int getFGColor();
 
     int getMaxVolume() { return m_VolumeMax;}
     void setMaxVolume(int nmaxvol) { m_VolumeMax = nmaxvol;}

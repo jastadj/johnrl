@@ -27,6 +27,12 @@ ContainerLiquid::~ContainerLiquid()
 
 }
 
+int ContainerLiquid::getFGColor()
+{
+    if(!isEmpty()) return getLiquidType()->getColor();
+    else return m_FGColor;
+}
+
 bool ContainerLiquid::addLiquid(Liquid *ltype, int lvol)
 {
     if(ltype == NULL) return false;

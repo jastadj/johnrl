@@ -30,7 +30,7 @@ public:
     std::string getName() { return m_Name;}
     int getTileID() { return m_TileID; }
     int getBGColor() { return m_BGColor;}
-    int getFGColor() { return m_FGColor;}
+    virtual int getFGColor() { return m_FGColor;}
 
     sf::Vector2i getPosition() { return m_Position;}
     void setPosition(sf::Vector2i newpos) { m_Position = newpos;}

@@ -350,6 +350,7 @@ bool Engine::initItems()
     ContainerLiquid *cptr = dynamic_cast<ContainerLiquid*>(newitem);
     cptr->m_Name = "water bottle";
     cptr->setMaxVolume(3);
+    cptr->m_TileID = int('!');
     m_ItemDB.push_back(cptr);
 
     return true;
@@ -440,6 +441,7 @@ void Engine::mainLoop()
                 if(event.key.code == sf::Keyboard::Escape) quit = true;
                 else if(event.key.code == sf::Keyboard::I) showInventory();
                 else if(event.key.code == sf::Keyboard::F) selectItemFromInventory();
+                else if(event.key.code == sf::Keyboard::D) dropItemUI();
                 else if(event.key.code == sf::Keyboard::Left || event.key.code == sf::Keyboard::Numpad4)
                 {
                     m_Player->walkDir(DIR_WEST);
@@ -480,6 +482,7 @@ void Engine::mainLoop()
 
         //draw
         drawMap();
+        drawItems();
         drawPlayer();
         drawMonsters();
         drawStatus();
@@ -605,6 +608,18 @@ void Engine::drawMonsters()
         if(posInViewport(tmonster->getPosition()))
         drawTileInViewport(tmonster->getPosition().x, tmonster->getPosition().y, tmonster->getTileID(), tmonster->getFGColor(),
                  tmonster->getBGColor());
+    }
+}
+
+void Engine::drawItems()
+{
+    for(int i = 0; i < int(testmap->getMapItems()->size()); i++)
+    {
+        Item *titem = (*testmap->getMapItems())[i];
+
+        if(posInViewport(titem->getPosition()))
+        drawTileInViewport(titem->getPosition().x, titem->getPosition().y, titem->getTileID(), titem->getFGColor(),
+                 titem->getBGColor());
     }
 }
 
@@ -735,12 +750,31 @@ void Engine::showInventory()
 
 }
 
-Item *Engine::selectItemFromInventory(std::vector<int> itemfilter)
+Item *Engine::selectItemFromInventory(std::string promptstr, std::vector<int> itemfilter)
 {
     bool quit = false;
 
     Item *selecteditem = NULL;
     int selecteditemindex = 0;
+
+    //get player inventory list
+    std::vector<Item*> *inv = m_Player->getInventory();
+    std::vector<Item*> filteredlist;
+
+    //build item list based on filter
+    for(int i = 0; i < int(inv->size()); i++)
+    {
+        //for each inventory item, check to see if it matches filter criteria
+        for(int n = 0; n < int(itemfilter.size()); n++)
+        {
+            //if filter matches or OBJ_TOTAL filter is used, add item to filtered items list
+            if( (*inv)[i]->getType() == itemfilter[n] || itemfilter[n] == OBJ_TOTAL)
+            {
+                filteredlist.push_back( (*inv)[i]);
+                break;
+            }
+        }
+    }
 
     while(!quit)
     {
@@ -751,12 +785,30 @@ Item *Engine::selectItemFromInventory(std::vector<int> itemfilter)
             if(event.type == sf::Event::KeyPressed)
             {
                 if(event.key.code == sf::Keyboard::Escape) quit = true;
+                else if(event.key.code == sf::Keyboard::Return)
+                {
+                    selecteditem = filteredlist[selecteditemindex];
+
+                    //debug
+                    std::cout << "selected " << selecteditem->getName() << std::endl;
+
+                    return selecteditem;
+                }
             }
         }
 
         //draw
-        drawString(0,0,"Select Item:");
+        drawString(0,0, promptstr);
 
+        //draw all items in filtered items list
+        for(int i = 0; i < int(filteredlist.size()); i++)
+        {
+            std::stringstream inamestr;
+            inamestr << filteredlist[i]->getName();
+
+            if(selecteditemindex == i) drawString(0, i+2, inamestr.str(), COLOR_BLACK, COLOR_WHITE);
+            else drawString(0, i+2, inamestr.str());
+        }
 
         //display
         m_Screen->display();
@@ -895,3 +947,50 @@ Item *Engine::createItem(int itemid)
     return newitem;
 }
 
+bool Engine::moveItem(Item *titem, std::vector<Item*> *isource, std::vector<Item*> *idest)
+{
+    if(isource == NULL || idest == NULL || titem == NULL)
+    {
+        std::cout << "Error moving item.  Item, source, or destionation is not valid!\n";
+        return false;
+    }
+
+    //find item in source list
+    for(int i = int(isource->size()-1); i >= 0; i--)
+    {
+        //target object found in source list
+        if(titem == (*isource)[i])
+        {
+            //remove from source list
+            isource->erase(isource->begin() + i);
+            break;
+        }
+
+        if(i == 0)
+        {
+            std::cout << "Error in moveitem, unable to find target item in source list\n";
+            return false;
+        }
+    }
+
+    //add item to destination list
+    idest->push_back(titem);
+
+
+    std::cout << "Moved item " << titem->getName() << " to destination list.\n";
+    return true;
+}
+
+void Engine::dropItemUI()
+{
+    Item *titem = selectItemFromInventory("Drop what?");
+
+    //no valid item selected to drop
+    if(titem == NULL) return;
+
+    //move item from player inventory to map items
+    moveItem(titem, m_Player->getInventory(), testmap->getMapItems());
+
+    //set item's position to players position
+    titem->setPosition( m_Player->getPosition());
+}

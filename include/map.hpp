@@ -5,6 +5,7 @@
 #include <vector>
 #include "gameobj.hpp"
 #include "monster.hpp"
+#include "itemtypes.hpp"
 
 class MapTile: public GameObj
 {
@@ -31,6 +32,7 @@ private:
     std::vector < std::vector< int > > m_MapData;
 
     std::vector< Monster*> m_MapMonsters;
+    std::vector< Item*> m_MapItems;
 
 public:
     MapChunk(int width = MAPWIDTH, int height = MAPHEIGHT);
@@ -46,7 +48,11 @@ public:
 
     bool addMonster(int monsterid, int x, int y);
     bool addMonster(int monsterid, sf::Vector2i pos);
-    const std::vector< Monster*> *getMapMonsters() const { return &m_MapMonsters;}
+    std::vector< Monster*> *getMapMonsters() { return &m_MapMonsters;}
+
+    bool addItem(int itemid, int x, int y);
+    bool addItem(int itemid, sf::Vector2i ipos);
+    std::vector< Item*> *getMapItems() { return &m_MapItems;}
 };
 
 #endif // CLASS_MAPCHUNK
