@@ -74,7 +74,8 @@ private:
     void mainLoop();
     void playerDeath();
     void showInventory();
-    //Item *selectItemFromInventory(int ifilter = OBJ_TOTAL);
+    static std::vector<int> m_ItemFilterAll;
+    Item *selectItemFromInventory(std::vector<int> itemfilter = m_ItemFilterAll);
 
     //draw
     void drawTile(int x, int y, int tilenum, int fgcolor = 1, int bgcolor = 0);

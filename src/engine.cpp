@@ -6,7 +6,9 @@
 #include <sstream>
 #include <cmath>
 
+//statics
 Engine *Engine::onlyinstance = NULL;
+std::vector<int> Engine::m_ItemFilterAll;
 
 Engine::Engine()
 {
@@ -29,6 +31,8 @@ Engine::Engine()
     m_Viewport.width = 41;
     m_Viewport.height = 25;
     m_ViewportPosition = sf::Vector2i(0,0);
+
+    m_ItemFilterAll.push_back(OBJ_TOTAL);
 
     //set seed
     m_Seed = long(time(NULL));
@@ -435,6 +439,7 @@ void Engine::mainLoop()
             {
                 if(event.key.code == sf::Keyboard::Escape) quit = true;
                 else if(event.key.code == sf::Keyboard::I) showInventory();
+                else if(event.key.code == sf::Keyboard::F) selectItemFromInventory();
                 else if(event.key.code == sf::Keyboard::Left || event.key.code == sf::Keyboard::Numpad4)
                 {
                     m_Player->walkDir(DIR_WEST);
@@ -728,6 +733,36 @@ void Engine::showInventory()
         m_Screen->display();
     }
 
+}
+
+Item *Engine::selectItemFromInventory(std::vector<int> itemfilter)
+{
+    bool quit = false;
+
+    Item *selecteditem = NULL;
+    int selecteditemindex = 0;
+
+    while(!quit)
+    {
+        sf::Event event;
+
+        while(m_Screen->pollEvent(event))
+        {
+            if(event.type == sf::Event::KeyPressed)
+            {
+                if(event.key.code == sf::Keyboard::Escape) quit = true;
+            }
+        }
+
+        //draw
+        drawString(0,0,"Select Item:");
+
+
+        //display
+        m_Screen->display();
+    }
+
+    return selecteditem;
 }
 
 
