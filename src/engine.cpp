@@ -780,6 +780,8 @@ Item *Engine::selectItemFromInventory(std::string promptstr, std::vector<int> it
     {
         sf::Event event;
 
+        m_Screen->clear();
+
         while(m_Screen->pollEvent(event))
         {
             if(event.type == sf::Event::KeyPressed)
