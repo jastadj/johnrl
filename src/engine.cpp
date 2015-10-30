@@ -1047,10 +1047,14 @@ void Engine::dropItemUI()
 
     //set item's position to players position
     titem->setPosition( m_Player->getPosition());
-    m_MessageManager->addMessage("Dropped item.");
+
+    //drop message
+    std::stringstream dmsg;
+    dmsg << "Dropped " << titem->getName() << ".";
+    m_MessageManager->addMessage(dmsg.str());
 }
 
 void Engine::playerTurnUpdates()
 {
-    //m_MessageManager->update();
+    m_MessageManager->update();
 }

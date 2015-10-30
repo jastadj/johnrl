@@ -39,7 +39,7 @@ MessageManager::~MessageManager()
 
 void MessageManager::update()
 {
-    for(int i = int(m_MessageQue.size()); i >= 0; i --)
+    for(int i = int(m_MessageQue.size()-1); i >= 0; i --)
     {
         //if message time is 0, remove from que and move to message history
         if( !m_MessageQue[i]->decayTime() )
