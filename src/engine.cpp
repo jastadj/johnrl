@@ -346,13 +346,22 @@ bool Engine::initMonsters()
 
 bool Engine::initItems()
 {
-    Item *newitem = new ContainerLiquid();
+    //item 0
+    Item *newitem = new ContainerLiquid;
     ContainerLiquid *cptr = dynamic_cast<ContainerLiquid*>(newitem);
     cptr->m_Name = "water bottle";
     cptr->setMaxVolume(3);
     cptr->m_TileID = int('!');
     m_ItemDB.push_back(cptr);
 
+    //item 1
+    newitem = new MiscItem;
+    newitem->m_Name = "rock";
+    newitem->m_TileID = int('*');
+    m_ItemDB.push_back(newitem);
+
+
+    std::cout << "Initialized " << m_ItemDB.size() << " items - ";
     return true;
 }
 
@@ -414,6 +423,9 @@ bool Engine::newGame()
     ContainerLiquid *cptr = dynamic_cast<ContainerLiquid*>(pitem);
     cptr->fillWithLiquid(m_Liquids[0]);
     m_Player->addToInventory(pitem);
+
+    //add rock
+    m_Player->addToInventory( createItem(1));
 
 }
 
@@ -787,6 +799,8 @@ Item *Engine::selectItemFromInventory(std::string promptstr, std::vector<int> it
             if(event.type == sf::Event::KeyPressed)
             {
                 if(event.key.code == sf::Keyboard::Escape) quit = true;
+                else if(event.key.code == sf::Keyboard::Down) selecteditemindex++;
+                else if(event.key.code == sf::Keyboard::Up) selecteditemindex--;
                 else if(event.key.code == sf::Keyboard::Return)
                 {
                     selecteditem = filteredlist[selecteditemindex];
@@ -798,6 +812,10 @@ Item *Engine::selectItemFromInventory(std::string promptstr, std::vector<int> it
                 }
             }
         }
+
+        //resolve selected item index if out of bounds
+        if(selecteditemindex >= int(filteredlist.size()) ) selecteditemindex = 0;
+        else if(selecteditemindex < 0) selecteditemindex = int(filteredlist.size()-1);
 
         //draw
         drawString(0,0, promptstr);
@@ -935,16 +953,23 @@ Item *Engine::createItem(int itemid)
     {
     case OBJ_ITEM_CONTAINER:
         newitem = new Container();
-        *newitem = *m_ItemDB[itemid];
+        //*newitem = *m_ItemDB[itemid];
         break;
     case OBJ_ITEM_CONTAINER_LIQUID:
         newitem = new ContainerLiquid();
-        *newitem = *m_ItemDB[itemid];
+        //*newitem = *m_ItemDB[itemid];
+        break;
+    case OBJ_ITEM_MISC:
+        newitem = new MiscItem;
+        //*newitem = *m_ItemDB[itemid];
         break;
     default:
         std::cout << "Error creating item, unrecognized type!\n";
         break;
     }
+
+    if(newitem == NULL) return false;
+    else *newitem = *m_ItemDB[itemid];
 
     return newitem;
 }
