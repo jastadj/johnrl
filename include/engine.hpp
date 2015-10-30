@@ -113,6 +113,8 @@ public:
 
     void start();
 
+    long getSeed() { return m_Seed;}
+
     void playerTurnUpdates();
 
     int getMonsterDBSize() { return int(m_MonsterDB.size()); }

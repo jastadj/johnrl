@@ -31,5 +31,7 @@ public:
     void setHydrationLevel(int nhydlevel) { m_HydrationLevel = nhydlevel;}
     bool drink(Liquid *ltype);
 
+    std::vector<std::string> saveDataToString();
+
 };
 #endif // CLASS_PLAYER

@@ -2,6 +2,7 @@
 
 #include <string>
 #include <iostream>
+#include <fstream>
 
 #include "engine.hpp"
 
@@ -29,8 +30,17 @@ bool MapTile::setLiquid(Liquid *nliquid)
 
 ///////////////////////////////////////////////////////////////
 // MAP CHUNK
-MapChunk::MapChunk(int width, int height)
+MapChunk::MapChunk(int nglobalx, int nglobaly, int width, int height)
 {
+    //set global position
+    m_GlobalX = nglobalx;
+    m_GlobalY = nglobaly;
+
+    //reset seed
+    Engine *eptr = NULL;
+    eptr = Engine::getInstance();
+    srand(eptr->getSeed());
+
     //resize array
     m_MapData.resize(height);
     for(int i = 0; i < int(m_MapData.size()); i++) m_MapData[i].resize(width);
@@ -54,6 +64,15 @@ MapChunk::~MapChunk()
     //delete monsters
     for(int i = 0; i < int(m_MapMonsters.size()); i++) delete m_MapMonsters[i];
     m_MapMonsters.clear();
+
+    //delete items
+    for(int i = 0; i < int(m_MapItems.size()); i++) delete m_MapItems[i];
+    m_MapItems.clear();
+}
+
+bool MapChunk::save()
+{
+
 }
 
 sf::Vector2i MapChunk::getDimensions()

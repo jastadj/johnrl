@@ -23,6 +23,8 @@ public:
     Liquid *getLiquid() { return m_Liquid;}
     bool hasLiquid() { if(m_Liquid != NULL) return true;  else return false;}
 
+    std::vector<std::string> saveDataToString() {}
+
 };
 
 class MapChunk
@@ -34,9 +36,16 @@ private:
     std::vector< Monster*> m_MapMonsters;
     std::vector< Item*> m_MapItems;
 
+    int m_GlobalX;
+    int m_GlobalY;
+
 public:
-    MapChunk(int width = MAPWIDTH, int height = MAPHEIGHT);
+    MapChunk(int nglobalx, int nglobaly, int width = MAPWIDTH, int height = MAPHEIGHT);
     ~MapChunk();
+
+    sf::Vector2i getGlobalPos() { return sf::Vector2i(m_GlobalX, m_GlobalY);}
+
+    bool save();
 
     bool mapDataValid(int x, int y);
     sf::Vector2i getDimensions();

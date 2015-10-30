@@ -12,5 +12,7 @@ public:
     ~Monster();
 
     int getType() { return OBJ_MONSTER;}
+
+    std::vector<std::string> saveDataToString();
 };
 #endif // CLASS_MONSTER

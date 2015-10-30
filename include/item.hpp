@@ -5,6 +5,7 @@
 
 //NOTE : when creating new item types, need to modify engine::createitem,
 
+//ABSTRACT
 class Item:public GameObj
 {
 private:
@@ -34,6 +35,8 @@ private:
 
 public:
     int getType() { return OBJ_ITEM_MISC;}
+
+    std::vector<std::string> saveDataToString();
 };
 
 #endif // CLASS_ITEM

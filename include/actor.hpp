@@ -4,6 +4,8 @@
 #include "gameobj.hpp"
 #include "itemtypes.hpp"
 
+
+//ABSTRACT
 class Actor: public GameObj
 {
 protected:

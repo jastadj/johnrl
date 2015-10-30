@@ -17,7 +17,7 @@ public:
     //virtual int getFGColor();
 
     virtual std::vector< Item*> *getInventory() { return &m_Inventory;}
-
+    virtual std::vector<std::string> saveDataToString();
 };
 
 class ContainerLiquid:public Container
@@ -47,5 +47,7 @@ public:
     bool removeLiquid(int lvol);
     bool fillWithLiquid(Liquid *ltype);
     bool isEmpty();
+
+    std::vector<std::string> saveDataToString();
 };
 #endif // CLASS_CONTAINER

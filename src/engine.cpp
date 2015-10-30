@@ -378,7 +378,7 @@ bool Engine::initLiquids()
 
 bool Engine::initMap()
 {
-    testmap = new MapChunk;
+    testmap = new MapChunk(0,0);
 
     return true;
 }

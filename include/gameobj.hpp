@@ -39,6 +39,8 @@ public:
     void setWalkable(bool nwalk) { m_Walkable = nwalk;}
     bool isWalkable() { return m_Walkable;}
 
+    virtual std::vector<std::string> saveDataToString()=0;
+
     friend class Engine;
 };
 #endif // CLASS_GAMEOBJ
