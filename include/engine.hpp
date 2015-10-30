@@ -74,6 +74,11 @@ private:
     //player actions
     void playerDeath();
     void showInventory();
+    static std::vector<int> m_ItemFilterAll;
+    Item *selectItemFromInventory(std::vector<Item*> *source,std::string promptstr = "Select Item:",
+                                  std::vector<int> itemfilter = m_ItemFilterAll);
+    std::vector<Item*> selectMultipleItemsFromInventory(std::vector<Item*> *source, std::string promptstr = "Select Item:",
+                                  std::vector<int> itemfilter = m_ItemFilterAll);
     void dropItemUI();
     void pickupItemFromTileUI(int x, int y);
     void pickupItemFromTileUI(sf::Vector2i tpos);
@@ -82,8 +87,6 @@ private:
     //loops
     void mainLoop();
 
-    static std::vector<int> m_ItemFilterAll;
-    Item *selectItemFromInventory(std::string promptstr = "Select Item:", std::vector<int> itemfilter = m_ItemFilterAll);
 
     //draw
     void drawGame();

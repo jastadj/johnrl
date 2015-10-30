@@ -460,6 +460,7 @@ void Engine::mainLoop()
                 else if(event.key.code == sf::Keyboard::I) showInventory();
                 else if(event.key.code == sf::Keyboard::F) fillLiquidContainer();
                 else if(event.key.code == sf::Keyboard::D) dropItemUI();
+                else if(event.key.code == sf::Keyboard::G) pickupItemFromTileUI(m_Player->getPosition());
                 else if(event.key.code == sf::Keyboard::Left || event.key.code == sf::Keyboard::Numpad4)
                 {
                     m_Player->walkDir(DIR_WEST);
@@ -794,7 +795,7 @@ void Engine::showInventory()
 
 }
 
-Item *Engine::selectItemFromInventory(std::string promptstr, std::vector<int> itemfilter)
+Item *Engine::selectItemFromInventory(std::vector<Item*> *source, std::string promptstr,  std::vector<int> itemfilter)
 {
     bool quit = false;
 
@@ -802,7 +803,7 @@ Item *Engine::selectItemFromInventory(std::string promptstr, std::vector<int> it
     int selecteditemindex = 0;
 
     //get player inventory list
-    std::vector<Item*> *inv = m_Player->getInventory();
+    std::vector<Item*> *inv = source;
     std::vector<Item*> filteredlist;
 
     //build item list based on filter
@@ -869,12 +870,93 @@ Item *Engine::selectItemFromInventory(std::string promptstr, std::vector<int> it
     return selecteditem;
 }
 
+std::vector<Item*> Engine::selectMultipleItemsFromInventory(std::vector<Item*> *source, std::string promptstr,  std::vector<int> itemfilter)
+{
+    bool quit = false;
+
+    std::vector<Item*> selecteditems;
+    std::vector<bool> bselecteditems;
+    int selecteditemindex = 0;
+
+    //get player inventory list
+    std::vector<Item*> *inv = source;
+    std::vector<Item*> filteredlist;
+
+    //build item list based on filter
+    for(int i = 0; i < int(inv->size()); i++)
+    {
+        //for each inventory item, check to see if it matches filter criteria
+        for(int n = 0; n < int(itemfilter.size()); n++)
+        {
+            //if filter matches or OBJ_TOTAL filter is used, add item to filtered items list
+            if( (*inv)[i]->getType() == itemfilter[n] || itemfilter[n] == OBJ_TOTAL)
+            {
+                filteredlist.push_back( (*inv)[i]);
+                bselecteditems.push_back(false);
+                break;
+            }
+        }
+    }
+
+    while(!quit)
+    {
+        sf::Event event;
+
+        m_Screen->clear();
+
+        while(m_Screen->pollEvent(event))
+        {
+            if(event.type == sf::Event::KeyPressed)
+            {
+                if(event.key.code == sf::Keyboard::Escape) quit = true;
+                else if(event.key.code == sf::Keyboard::Down) selecteditemindex++;
+                else if(event.key.code == sf::Keyboard::Up) selecteditemindex--;
+                else if(event.key.code == sf::Keyboard::Return)
+                {
+                    //toggle selected item
+                    bselecteditems[selecteditemindex] = !bselecteditems[selecteditemindex];
+                }
+            }
+        }
+
+        //resolve selected item index if out of bounds
+        if(selecteditemindex >= int(filteredlist.size()) ) selecteditemindex = 0;
+        else if(selecteditemindex < 0) selecteditemindex = int(filteredlist.size()-1);
+
+        //draw
+        drawString(0,0, promptstr);
+
+        //draw all items in filtered items list
+        for(int i = 0; i < int(filteredlist.size()); i++)
+        {
+            std::stringstream inamestr;
+            if(bselecteditems[i]) inamestr << " + ";
+            else inamestr << " - ";
+            inamestr << filteredlist[i]->getName();
+
+            if(selecteditemindex == i) drawString(0, i+2, inamestr.str(), COLOR_BLACK, COLOR_WHITE);
+            else drawString(0, i+2, inamestr.str());
+        }
+
+        //display
+        m_Screen->display();
+    }
+
+    //put selected items into list
+    for(int i = 0; i < int(filteredlist.size()); i++)
+    {
+        if(bselecteditems[i]) selecteditems.push_back(filteredlist[i]);
+    }
+
+    return selecteditems;
+}
+
 bool Engine::fillLiquidContainer()
 {
     //query item from player to fill
     std::vector<int> filter;
     filter.push_back(OBJ_ITEM_CONTAINER_LIQUID);
-    Item *titem = selectItemFromInventory("Fill what?", filter);
+    Item *titem = selectItemFromInventory(m_Player->getInventory(), "Fill what?", filter);
     ContainerLiquid *tcl = dynamic_cast<ContainerLiquid*>(titem);
     if(tcl == NULL) return false;
 
@@ -925,8 +1007,58 @@ bool Engine::fillLiquidContainer()
 
 }
 
+void Engine::dropItemUI()
+{
+    Item *titem = selectItemFromInventory(m_Player->getInventory(), "Drop what?");
+
+    //no valid item selected to drop
+    if(titem == NULL) return;
+
+    //move item from player inventory to map items
+    moveItem(titem, m_Player->getInventory(), testmap->getMapItems());
+
+    //set item's position to players position
+    titem->setPosition( m_Player->getPosition());
+
+    //drop message
+    std::stringstream dmsg;
+    dmsg << "Dropped " << titem->getName() << ".";
+    m_MessageManager->addMessage(dmsg.str());
+}
+
+void Engine::playerTurnUpdates()
+{
+    m_MessageManager->update();
+}
+
 void Engine::pickupItemFromTileUI(int x, int y)
 {
+    std::vector< Item*> ilist = testmap->getMapItemsAtTile(x, y);
+    std::vector< Item*> selecteditems;
+
+    if(ilist.empty()) return;
+
+    //if theres only one item there, add it to selected items list
+    if( int(ilist.size()) == 1) selecteditems = ilist;
+
+    //if there are multiple items use UI to select which items to pickup
+    else
+    {
+        selecteditems = selectMultipleItemsFromInventory(&ilist, "Get what items?");
+    }
+
+    //move selected items to player inv
+    for(int i = 0; i < int(selecteditems.size()); i++)
+    {
+        if(moveItem(selecteditems[i], testmap->getMapItems(), m_Player->getInventory()) )
+        {
+            std::stringstream pstr;
+            pstr << "Picked up " << selecteditems[i]->getName();
+            m_MessageManager->addMessage(pstr.str());
+        }
+    }
+
+
 
 }
 
@@ -1131,26 +1263,4 @@ bool Engine::moveItem(Item *titem, std::vector<Item*> *isource, std::vector<Item
     return true;
 }
 
-void Engine::dropItemUI()
-{
-    Item *titem = selectItemFromInventory("Drop what?");
 
-    //no valid item selected to drop
-    if(titem == NULL) return;
-
-    //move item from player inventory to map items
-    moveItem(titem, m_Player->getInventory(), testmap->getMapItems());
-
-    //set item's position to players position
-    titem->setPosition( m_Player->getPosition());
-
-    //drop message
-    std::stringstream dmsg;
-    dmsg << "Dropped " << titem->getName() << ".";
-    m_MessageManager->addMessage(dmsg.str());
-}
-
-void Engine::playerTurnUpdates()
-{
-    m_MessageManager->update();
-}

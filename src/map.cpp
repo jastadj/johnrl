@@ -188,3 +188,18 @@ bool MapChunk::addItem(int itemid, sf::Vector2i ipos)
 {
     return addItem(itemid, ipos.x, ipos.y);
 }
+
+std::vector< Item*> MapChunk::getMapItemsAtTile(int x, int y)
+{
+    std::vector< Item*> founditems;
+
+    sf::Vector2i tpos(x,y);
+
+    for(int i = 0; i < int(m_MapItems.size()); i++)
+    {
+
+        if(m_MapItems[i]->getPosition() == tpos) founditems.push_back( m_MapItems[i]);
+    }
+
+    return founditems;
+}

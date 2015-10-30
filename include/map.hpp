@@ -53,6 +53,7 @@ public:
     bool addItem(int itemid, int x, int y);
     bool addItem(int itemid, sf::Vector2i ipos);
     std::vector< Item*> *getMapItems() { return &m_MapItems;}
+    std::vector< Item*> getMapItemsAtTile(int x, int y);
 };
 
 #endif // CLASS_MAPCHUNK
