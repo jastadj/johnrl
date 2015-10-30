@@ -83,6 +83,9 @@ bool Actor::walkDir(int direction)
         Player *tactor = NULL;
         tactor = dynamic_cast<Player*>(this);
         if(tactor != NULL) tactor->doTurn();
+
+        //set turn counter to true
+
     }
 
     return true;

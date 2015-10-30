@@ -16,6 +16,7 @@ Engine::Engine()
     //init pointers to null
     m_Player = NULL;
     testmap = NULL;
+    m_MessageManager = NULL;
 
     //default initialization
     m_FrameRateLimit = 30;
@@ -412,6 +413,11 @@ bool Engine::newGame()
     if(initPlayer()) std::cout << "done.\n";
     else std::cout << "failed.\n";
 
+    std::cout << "Initializing message manager...";
+    if(m_MessageManager != NULL) delete m_MessageManager;
+    m_MessageManager = new MessageManager;
+    std::cout << "done.\n";
+
     //create unicorn
     testmap->addMonster(0, testmap->getRandomValidPosition());
 
@@ -489,8 +495,10 @@ void Engine::mainLoop()
             }
         }
 
+        //UPDATE
         //center viewport on player
         centerViewport(m_Player->getPosition());
+
 
         //draw
         drawMap();
@@ -498,6 +506,7 @@ void Engine::mainLoop()
         drawPlayer();
         drawMonsters();
         drawStatus();
+        drawMessageQue();
 
         //update and display screen
         m_Screen->display();
@@ -659,6 +668,24 @@ void Engine::drawStatus()
     else if(m_Player->getHydrationLevel() == m_Player->getMaxHydrationLevel())
     {
         drawString(50,5, "Well Hydrated", COLOR_GREEN);
+    }
+}
+
+void Engine::drawMessageQue()
+{
+    std::vector<Message*> *msgque = m_MessageManager->getMessageQue();
+
+    if(msgque == NULL)
+    {
+        std::cout << "Error - unable to draw message que, que = NULL!\n";
+        return;
+    }
+    if(msgque->empty()) return;
+
+    //cycle through each message and draw
+    for(int i = 0; i < int(msgque->size()); i++)
+    {
+        drawString(0, i, (*msgque)[i]->getString());
     }
 }
 
@@ -1020,4 +1047,10 @@ void Engine::dropItemUI()
 
     //set item's position to players position
     titem->setPosition( m_Player->getPosition());
+    m_MessageManager->addMessage("Dropped item.");
+}
+
+void Engine::playerTurnUpdates()
+{
+    //m_MessageManager->update();
 }

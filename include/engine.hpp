@@ -11,6 +11,7 @@
 #include "player.hpp"
 #include "monster.hpp"
 #include "itemtypes.hpp"
+#include "message.hpp"
 
 class Engine
 {
@@ -67,6 +68,7 @@ private:
 
     //game objects
     long m_Seed;
+    MessageManager *m_MessageManager;
     Player *m_Player;
 
     //player actions
@@ -91,6 +93,7 @@ private:
     void drawMonsters();
     void drawItems();
     void drawStatus();
+    void drawMessageQue();
 
 public:
     ~Engine();
@@ -102,6 +105,8 @@ public:
     }
 
     void start();
+
+    void playerTurnUpdates();
 
     int getMonsterDBSize() { return int(m_MonsterDB.size()); }
     Monster *createMonster(int monsterid);

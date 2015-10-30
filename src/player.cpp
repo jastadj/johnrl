@@ -1,6 +1,6 @@
 #include "player.hpp"
 #include <iostream>
-
+#include "engine.hpp"
 
 Player::Player()
 {
@@ -40,6 +40,11 @@ void Player::doTurn()
         m_HydrationTick = 0;
         m_HydrationLevel--;
     }
+
+    //update message que
+    Engine *eptr = NULL;
+    eptr = Engine::getInstance();
+    eptr->playerTurnUpdates();
 
 }
 

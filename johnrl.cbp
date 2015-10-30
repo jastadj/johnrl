@@ -53,6 +53,7 @@
 		<Unit filename="include/itemtypes.hpp" />
 		<Unit filename="include/liquid.hpp" />
 		<Unit filename="include/map.hpp" />
+		<Unit filename="include/message.hpp" />
 		<Unit filename="include/monster.hpp" />
 		<Unit filename="include/player.hpp" />
 		<Unit filename="include/tools.hpp" />
@@ -64,6 +65,7 @@
 		<Unit filename="src/liquid.cpp" />
 		<Unit filename="src/main.cpp" />
 		<Unit filename="src/map.cpp" />
+		<Unit filename="src/message.cpp" />
 		<Unit filename="src/monster.cpp" />
 		<Unit filename="src/player.cpp" />
 		<Unit filename="src/tools.cpp" />
