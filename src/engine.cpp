@@ -458,7 +458,7 @@ void Engine::mainLoop()
             {
                 if(event.key.code == sf::Keyboard::Escape) quit = true;
                 else if(event.key.code == sf::Keyboard::I) showInventory();
-                else if(event.key.code == sf::Keyboard::F) selectItemFromInventory();
+                else if(event.key.code == sf::Keyboard::F) fillLiquidContainer();
                 else if(event.key.code == sf::Keyboard::D) dropItemUI();
                 else if(event.key.code == sf::Keyboard::Left || event.key.code == sf::Keyboard::Numpad4)
                 {
@@ -501,12 +501,7 @@ void Engine::mainLoop()
 
 
         //draw
-        drawMap();
-        drawItems();
-        drawPlayer();
-        drawMonsters();
-        drawStatus();
-        drawMessageQue();
+        drawGame();
 
         //update and display screen
         m_Screen->display();
@@ -548,6 +543,16 @@ void Engine::centerViewport(int x, int y)
 bool Engine::posInViewport(sf::Vector2i pos)
 {
     return posInViewport(pos.x, pos.y);
+}
+
+void Engine::drawGame()
+{
+    drawMap();
+    drawItems();
+    drawPlayer();
+    drawMonsters();
+    drawStatus();
+    drawMessageQue();
 }
 
 void Engine::drawTile(int x, int y, int tilenum, int fgcolor, int bgcolor)
@@ -864,6 +869,71 @@ Item *Engine::selectItemFromInventory(std::string promptstr, std::vector<int> it
     return selecteditem;
 }
 
+bool Engine::fillLiquidContainer()
+{
+    //query item from player to fill
+    std::vector<int> filter;
+    filter.push_back(OBJ_ITEM_CONTAINER_LIQUID);
+    Item *titem = selectItemFromInventory("Fill what?", filter);
+    ContainerLiquid *tcl = dynamic_cast<ContainerLiquid*>(titem);
+    if(tcl == NULL) return false;
+
+    //get direction of source
+    m_MessageManager->addMessage("Fill from what source?");
+    m_Screen->clear();
+    drawGame();
+    //drawString(0, m_ScreenTilesHeight-1, "Fill from what source?");
+    m_Screen->display();
+
+    //get tile to draw liquid from
+    sf::Vector2i ppos = m_Player->getPosition();
+    getDirectionFromUser(&ppos);
+
+    //check that tile is valid liquid source
+    if(m_MapTiles[testmap->getTile(ppos.x, ppos.y)]->hasLiquid() )
+    {
+        //check if item container type can fill from source liquid
+        Liquid *source = m_MapTiles[testmap->getTile(ppos.x, ppos.y)]->getLiquid();
+
+        //if container is not empty
+        if(!tcl->isEmpty())
+        {
+            //if liquid types do not match
+            if(tcl->getLiquidType() != source)
+            {
+                std::stringstream fmsg;
+                fmsg << "Need to empty " << tcl->getName() << " before filling with " << source->getName();
+                m_MessageManager->addMessage(fmsg.str() );
+                return false;
+            }
+        }
+
+        //go ahead and fill with source liquid
+        tcl->fillWithLiquid(source);
+        std::stringstream fmsg;
+        fmsg << "Filled " << tcl->getName() << " with " << source->getName();
+        m_MessageManager->addMessage(fmsg.str() );
+
+    }
+    else
+    {
+        m_MessageManager->addMessage("There is no liquid source there!");
+        return false;
+    }
+
+    return true;
+
+}
+
+void Engine::pickupItemFromTileUI(int x, int y)
+{
+
+}
+
+void Engine::pickupItemFromTileUI(sf::Vector2i tpos)
+{
+    pickupItemFromTileUI(tpos.x, tpos.y);
+}
 
 ///////////////////////////////////////////////////////////////////
 MapTile *Engine::getMapTile(int tileid)
@@ -894,10 +964,19 @@ bool Engine::validWalkableTile(int x, int y)
     return true;
 }
 
-int Engine::getDirectionFromUser()
+int Engine::getDirectionFromUser(sf::Vector2i *mcoord)
 {
     bool quit = false;
     int dir = DIR_NONE;
+
+    sf::Vector2i npos;
+    //if coordinate supplied, copy coordinate information
+    //this is used to make adjustments using direction from player
+    if(mcoord != NULL)
+    {
+        npos.x = mcoord->x;
+        npos.y = mcoord->y;
+    }
 
     while(!quit)
     {
@@ -911,40 +990,57 @@ int Engine::getDirectionFromUser()
                 if(event.key.code == sf::Keyboard::Left || event.key.code == sf::Keyboard::Numpad4)
                 {
                     dir = DIR_WEST;
+                    npos.x--;
                 }
                 else if(event.key.code == sf::Keyboard::Right || event.key.code == sf::Keyboard::Numpad6)
                 {
                     dir = DIR_EAST;
+                    npos.x++;
                 }
                 else if(event.key.code == sf::Keyboard::Up || event.key.code == sf::Keyboard::Numpad8)
                 {
                     dir = DIR_NORTH;
+                    npos.y--;
                 }
                 else if(event.key.code == sf::Keyboard::Down || event.key.code == sf::Keyboard::Numpad2)
                 {
                     dir = DIR_SOUTH;
+                    npos.y++;
                 }
                 else if(event.key.code == sf::Keyboard::Numpad1)
                 {
                     dir = DIR_SW;
+                    npos.x--;
+                    npos.y++;
                 }
                 else if(event.key.code == sf::Keyboard::Numpad3)
                 {
                     dir = DIR_SE;
+                    npos.x++;
+                    npos.y++;
                 }
                 else if(event.key.code == sf::Keyboard::Numpad7)
                 {
                     dir = DIR_NW;
+                    npos.x--;
+                    npos.y--;
                 }
                 else if(event.key.code == sf::Keyboard::Numpad9)
                 {
                     dir = DIR_NE;
+                    npos.x++;
+                    npos.y--;
                 }
 
                 quit = true;
             }
         }
 
+    }
+
+    if(mcoord != NULL)
+    {
+        *mcoord = npos;
     }
 
     return dir;

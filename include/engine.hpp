@@ -75,6 +75,9 @@ private:
     void playerDeath();
     void showInventory();
     void dropItemUI();
+    void pickupItemFromTileUI(int x, int y);
+    void pickupItemFromTileUI(sf::Vector2i tpos);
+    bool fillLiquidContainer();
 
     //loops
     void mainLoop();
@@ -83,6 +86,7 @@ private:
     Item *selectItemFromInventory(std::string promptstr = "Select Item:", std::vector<int> itemfilter = m_ItemFilterAll);
 
     //draw
+    void drawGame();
     void drawTile(int x, int y, int tilenum, int fgcolor = 1, int bgcolor = 0);
     void drawTile(int x, int y, char ch, int fgcolor = 1, int bgcolor = 0);
     void drawTileInViewport(int x, int y, int tilenum, int fgcolor = 1, int bgcolor = 0);
@@ -117,7 +121,7 @@ public:
 
     MapChunk *testmap;
     bool validWalkableTile(int x, int y);
-    int getDirectionFromUser();
+    int getDirectionFromUser(sf::Vector2i *mcoord = NULL);
 
 };
 

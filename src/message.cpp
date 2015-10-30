@@ -1,10 +1,14 @@
 #include "message.hpp"
 #include "engine.hpp"
+#include <iostream>
 
 Message::Message(std::string nmsg)
 {
     m_Message = nmsg;
     m_MsgTime = 4;
+
+    std::cout << "MESSAGE:" << nmsg << std::endl;
+
 }
 
 Message::~Message()
