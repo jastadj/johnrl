@@ -23,7 +23,7 @@ public:
     Liquid *getLiquid() { return m_Liquid;}
     bool hasLiquid() { if(m_Liquid != NULL) return true;  else return false;}
 
-    std::vector<std::string> saveDataToString() {}
+    std::vector<std::string> saveDataToString() {};
 
 };
 

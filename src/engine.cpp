@@ -38,6 +38,7 @@ Engine::Engine()
     //set seed
     m_Seed = long(time(NULL));
     srand(m_Seed);
+
 }
 
 Engine::~Engine()
@@ -347,6 +348,7 @@ bool Engine::initMonsters()
 
 bool Engine::initItems()
 {
+
     //item 0
     Item *newitem = new ContainerLiquid;
     ContainerLiquid *cptr = dynamic_cast<ContainerLiquid*>(newitem);
@@ -362,16 +364,25 @@ bool Engine::initItems()
     m_ItemDB.push_back(newitem);
 
 
+    //set all item ids as index position
+    for(int i = 0; i < int(m_ItemDB.size()); i++)
+    {
+        m_ItemDB[i]->setItemID(i);
+    }
+
     std::cout << "Initialized " << m_ItemDB.size() << " items - ";
     return true;
 }
 
 bool Engine::initLiquids()
 {
+
     Liquid *newliquid = new Liquid;
     newliquid->setName("water");
     newliquid->setColor(COLOR_BLUE);
     m_Liquids.push_back(newliquid);
+
+    for(int i = 0; i < int(m_Liquids.size()); i++) m_Liquids[i]->setLiquidID(i);
 
     return true;
 }
@@ -457,6 +468,7 @@ void Engine::mainLoop()
             else if(event.type == sf::Event::KeyPressed)
             {
                 if(event.key.code == sf::Keyboard::Escape) quit = true;
+                else if(event.key.code == sf::Keyboard::F1) debugtest();
                 else if(event.key.code == sf::Keyboard::I) showInventory();
                 else if(event.key.code == sf::Keyboard::F) fillLiquidContainer();
                 else if(event.key.code == sf::Keyboard::D) dropItemUI();
@@ -1087,11 +1099,25 @@ MapTile *Engine::getMapTile(int tileid)
 
 bool Engine::validWalkableTile(int x, int y)
 {
+    sf::Vector2i tpos(x,y);
+
+    //check that tile is within map dimensions
     sf::Vector2i mapdim = testmap->getDimensions();
     if(x < 0 || y < 0 || x >= mapdim.x || y >= mapdim.y) return false;
 
+    //check that tile is walkable
     MapTile *ttile = getMapTile( testmap->getTile(x,y) );
     if(!ttile->isWalkable()) return false;
+
+    //check that there are no actors there
+    std::vector<Monster*> *actors = testmap->getMapMonsters();
+    for(int i = 0; i < int(actors->size()); i++)
+    {
+        if((*actors)[i]->getPosition() == tpos) return false;
+    }
+
+    //check if player is there
+    if( m_Player->getPosition() == tpos) return false;
 
     return true;
 }
@@ -1264,3 +1290,14 @@ bool Engine::moveItem(Item *titem, std::vector<Item*> *isource, std::vector<Item
 }
 
 
+void Engine::debugtest()
+{
+    std::vector<Item*> *inv = m_Player->getInventory();
+
+    for(int i = 0; i < int(inv->size()); i++)
+    {
+        std::vector<std::string> teststr = (*inv)[i]->saveDataToString();
+
+        for(int n = 0; n < int(teststr.size()); n++) std::cout << teststr[n];
+    }
+}

@@ -5,6 +5,8 @@ Liquid::Liquid()
 {
     m_Name = "unnamed";
     m_Color = COLOR_WHITE;
+
+    m_LiquidID = -1;
 }
 
 Liquid::~Liquid()

@@ -12,11 +12,15 @@ private:
     int m_Weight;
     int m_Encumbrance;
     int m_Value;
+
+    int m_ItemID; // do not change, this gets set during init time
 public:
     Item();
     virtual ~Item();
 
     virtual int getType()=0;
+    int getItemID() { return m_ItemID;}
+    void setItemID(int nid) { m_ItemID = nid;} // do not use!
 
     //virtual int getFGColor();
 
@@ -27,6 +31,9 @@ public:
     void setWeight(int nweight) { m_Weight = nweight;}
     void setEncumbrance(int nenc) { m_Encumbrance = nenc;}
     void setValue(int nvalue) { m_Value = nvalue;}
+
+    std::vector<std::string> saveItemDataToString();
+
 };
 
 class MiscItem:public Item
@@ -34,6 +41,9 @@ class MiscItem:public Item
 private:
 
 public:
+    MiscItem();
+    ~MiscItem();
+
     int getType() { return OBJ_ITEM_MISC;}
 
     std::vector<std::string> saveDataToString();

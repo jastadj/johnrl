@@ -128,6 +128,8 @@ public:
     bool validWalkableTile(int x, int y);
     int getDirectionFromUser(sf::Vector2i *mcoord = NULL);
 
+
+    void debugtest();
 };
 
 #endif // CLASS_ENGINE

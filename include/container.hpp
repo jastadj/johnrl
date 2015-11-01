@@ -20,7 +20,7 @@ public:
     virtual std::vector<std::string> saveDataToString();
 };
 
-class ContainerLiquid:public Container
+class ContainerLiquid:public Item
 {
 private:
 

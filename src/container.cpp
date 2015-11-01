@@ -1,5 +1,6 @@
 #include "container.hpp"
 #include <iostream>
+#include <sstream>
 
 Container::Container()
 {
@@ -11,6 +12,12 @@ Container::~Container()
 
 }
 
+std::vector<std::string> Container::saveDataToString()
+{
+    std::vector<std::string> savedata = saveItemDataToString();
+
+    return savedata;
+}
 
 //////////////////////////////////////////////////////////
 
@@ -25,6 +32,20 @@ ContainerLiquid::ContainerLiquid()
 ContainerLiquid::~ContainerLiquid()
 {
 
+}
+
+std::vector<std::string> ContainerLiquid::saveDataToString()
+{
+    std::vector<std::string> savedata = saveItemDataToString();
+
+    if(!isEmpty())
+    {
+        std::stringstream sstr;
+        sstr << "ADD_LIQUID:" << getLiquidType()->getLiquidID() << "," << m_VolumeCurrent << std::endl;
+        savedata.push_back(sstr.str());
+    }
+
+    return savedata;
 }
 
 int ContainerLiquid::getFGColor()

@@ -20,6 +20,13 @@ Player::~Player()
 
 }
 
+std::vector<std::string> Player::saveDataToString()
+{
+    std::vector<std::string> savedata;
+
+    return savedata;
+}
+
 bool Player::isAlive()
 {
     if( m_HealthCurrent <= 0) return false;
