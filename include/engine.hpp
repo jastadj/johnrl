@@ -4,7 +4,7 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 
-#include "simplexnoise.hpp"
+#include "simplexnoise.h"
 #include "defs.hpp"
 #include "tools.hpp"
 #include "gameobj.hpp"
@@ -66,6 +66,11 @@ private:
     std::vector < Monster* > m_MonsterDB;
     std::vector < Item* > m_ItemDB;
     std::vector < Liquid*> m_Liquids;
+
+    //noise
+    std::vector< std::vector<int> > genNoise(int width, int height, int xoffset = 0, int yoffset = 0,
+                                             float persistence = 0.7, float octaves = 6, float scale = 9,
+                                             int minval = 0, int maxval = 255);
 
     //game objects
     long m_Seed;

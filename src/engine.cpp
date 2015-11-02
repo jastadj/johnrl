@@ -74,6 +74,9 @@ void Engine::start()
     if(initItems()) std::cout << "done.\n";
     else std::cout << "failed.\n";
 
+    //debug noise
+    noisetest();
+
     std::cout << "Starting new game.\n";
     newGame();
 
@@ -1289,7 +1292,38 @@ bool Engine::moveItem(Item *titem, std::vector<Item*> *isource, std::vector<Item
     return true;
 }
 
+////////////////////////////////////////////////////////////////////////////////////////
+std::vector< std::vector<int> > Engine::genNoise(int width, int height, int xoffset, int yoffset,
+                                float persistence, float octaves, float scale, int minval, int maxval)
+{
+    //create a 2d array to store noise map
+    std::vector< std::vector<int> > noisemap;
+    noisemap.resize(height);
+    for(int i = 0; i < height; i++) noisemap[i].resize(width);
 
+    //clear all data in array
+    for(int i = 0; i < int(noisemap.size()); i++)
+    {
+        for(int n = 0; n < int(noisemap[0].size()); n++)
+        {
+            noisemap[i][n] = 0;
+        }
+    }
+
+    //generate noise
+    for(int i = 0; i < int(noisemap.size()); i++)
+    {
+        for(int n = 0; n < int(noisemap[0].size()); n++)
+        {
+            noisemap[i][n] = scaled_octave_noise_2d(octaves, persistence, scale, minval, maxval, xoffset+n, yoffset+i);
+        }
+    }
+
+    return noisemap;
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////
 void Engine::debugtest()
 {
     std::vector<Item*> *inv = m_Player->getInventory();
@@ -1304,38 +1338,107 @@ void Engine::debugtest()
 
 void Engine::noisetest()
 {
-    //create a 2d array to store noise map
-    std::vector< std::vector<int> > noisemap;
-    noisemap.resize(m_ScreenTilesHeight);
-    for(int i = 0; i < m_ScreenTilesHeight; i++) noisemap[i].resize(m_ScreenTilesWidth);
+    bool quit = false;
+    bool needsrefresh = false;
+    enum _MODES{MODE_SCALE, MODE_PERSISTENCE, MODE_OCTAVES};
+    int xshift = 0;
+    int yshift = 0;
+    int mode = MODE_SCALE;
 
-    //clear all data in array
-    for(int i = 0; i < int(noisemap.size()); i++)
+    float scale = 9;
+    float scale_unit = 0.5;
+    float octaves = 6;
+    float octaves_unit = 1.0;
+    float persistence = 0.7;
+    float persistence_unit = 0.1;
+
+    std::vector< std::vector<int> > noisemap = genNoise(m_ScreenTilesWidth, m_ScreenTilesHeight, 0,0, persistence, octaves, scale);
+    //draw noise loop
+
+    sf::RectangleShape tile(sf::Vector2f(m_TileWidth, m_TileHeight));
+
+
+    while(!quit)
     {
-        for(int n = 0; n < int(noisemap[0].size()); n++)
+        m_Screen->clear();
+
+        sf::Event event;
+
+        while(m_Screen->pollEvent(event))
         {
-            noisemap[i][n] = 0;
+            if(event.type == sf::Event::KeyPressed)
+            {
+                if(event.key.code == sf::Keyboard::Escape) quit = true;
+                else if(event.key.code == sf::Keyboard::Left) xshift--;
+                else if(event.key.code == sf::Keyboard::Right) xshift++;
+                else if(event.key.code == sf::Keyboard::Up) yshift--;
+                else if(event.key.code == sf::Keyboard::Down) yshift++;
+                else if(event.key.code == sf::Keyboard::S) mode = MODE_SCALE;
+                else if(event.key.code == sf::Keyboard::P) mode = MODE_PERSISTENCE;
+                else if(event.key.code == sf::Keyboard::O) mode = MODE_OCTAVES;
+                else if(event.key.code == sf::Keyboard::Add)
+                {
+                    switch(mode)
+                    {
+                    case MODE_SCALE:
+                        scale += scale_unit;
+                        break;
+                    case MODE_PERSISTENCE:
+                        persistence += persistence_unit;
+                        break;
+                    case MODE_OCTAVES:
+                        octaves += octaves_unit;
+                        break;
+                    }
+                }
+                else if(event.key.code == sf::Keyboard::Subtract)
+                {
+                    switch(mode)
+                    {
+                    case MODE_SCALE:
+                        scale -= scale_unit;
+                        break;
+                    case MODE_PERSISTENCE:
+                        persistence -= persistence_unit;
+                        break;
+                    case MODE_OCTAVES:
+                        octaves -= octaves_unit;
+                        break;
+                    }
+                }
+                needsrefresh = true;
+
+            }
         }
-    }
 
-    //random x/y relative to 0
-    int x0 = rand()%2000;
-    int y0 = rand()%2000;
-
-    //noise gen parameters
-    float octaves = 0.2;
-    float scale = 0.2;
-    float persistence = 0.2;
-    int minrange = 0;
-    int maxrange = 255;
-
-
-    //generate noise
-    for(int i = 0; i < int(noisemap.size()); i++)
-    {
-        for(int n = 0; n < int(noisemap[0].size()); n++)
+        if(needsrefresh)
         {
-            noisemap[i][n] = scaled_octave_noise_2d(octaves, persistence, scale, 0, 255, )
+            std::cout << "mode = " << mode << std::endl;
+            std::cout << "x = " << xshift << "      y = " << yshift << std::endl;
+            std::cout << "persistence = " << persistence << std::endl;
+            std::cout << "scale       = " << scale << std::endl;
+            std::cout << "octaves     = " << octaves << std::endl;
+            std::cout << "\n\n";
+
+            noisemap = genNoise(m_ScreenTilesWidth, m_ScreenTilesHeight, 0 + xshift, 0 + yshift, persistence, octaves, scale);
+            needsrefresh = false;
         }
+
+        //draw
+        for(int i = 0; i < int(noisemap.size()); i++)
+        {
+            for(int n = 0; n < int(noisemap[0].size()); n++)
+            {
+                tile.setPosition(n*m_TileWidth, i*m_TileHeight);
+                int shade = noisemap[i][n];
+                tile.setFillColor(sf::Color(shade,shade,shade));
+
+                m_Screen->draw(tile);
+            }
+        }
+
+        //display
+        m_Screen->display();
+
     }
 }
