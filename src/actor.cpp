@@ -80,6 +80,8 @@ bool Actor::walkDir(int direction)
     //if moving player, increase turn
     if(this->getType() == OBJ_PLAYER)
     {
+        //show what items are here at new pos?
+
         Player *tactor = NULL;
         tactor = dynamic_cast<Player*>(this);
         if(tactor != NULL) tactor->doTurn();

@@ -4,6 +4,7 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 
+#include "simplexnoise.hpp"
 #include "defs.hpp"
 #include "tools.hpp"
 #include "gameobj.hpp"
@@ -130,6 +131,7 @@ public:
 
 
     void debugtest();
+    void noisetest();
 };
 
 #endif // CLASS_ENGINE

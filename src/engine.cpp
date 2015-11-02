@@ -1301,3 +1301,41 @@ void Engine::debugtest()
         for(int n = 0; n < int(teststr.size()); n++) std::cout << teststr[n];
     }
 }
+
+void Engine::noisetest()
+{
+    //create a 2d array to store noise map
+    std::vector< std::vector<int> > noisemap;
+    noisemap.resize(m_ScreenTilesHeight);
+    for(int i = 0; i < m_ScreenTilesHeight; i++) noisemap[i].resize(m_ScreenTilesWidth);
+
+    //clear all data in array
+    for(int i = 0; i < int(noisemap.size()); i++)
+    {
+        for(int n = 0; n < int(noisemap[0].size()); n++)
+        {
+            noisemap[i][n] = 0;
+        }
+    }
+
+    //random x/y relative to 0
+    int x0 = rand()%2000;
+    int y0 = rand()%2000;
+
+    //noise gen parameters
+    float octaves = 0.2;
+    float scale = 0.2;
+    float persistence = 0.2;
+    int minrange = 0;
+    int maxrange = 255;
+
+
+    //generate noise
+    for(int i = 0; i < int(noisemap.size()); i++)
+    {
+        for(int n = 0; n < int(noisemap[0].size()); n++)
+        {
+            noisemap[i][n] = scaled_octave_noise_2d(octaves, persistence, scale, 0, 255, )
+        }
+    }
+}
