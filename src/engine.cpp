@@ -1351,8 +1351,10 @@ void Engine::noisetest()
     float octaves_unit = 1.0;
     float persistence = 0.7;
     float persistence_unit = 0.1;
+    int width = m_ScreenTilesHeight;
+    int height = m_ScreenTilesHeight;
 
-    std::vector< std::vector<int> > noisemap = genNoise(m_ScreenTilesWidth, m_ScreenTilesHeight, 0,0, persistence, octaves, scale);
+    std::vector< std::vector<int> > noisemap = genNoise(width, height, 0,0, persistence, octaves, scale);
     //draw noise loop
 
     sf::RectangleShape tile(sf::Vector2f(m_TileWidth, m_TileHeight));
@@ -1420,7 +1422,7 @@ void Engine::noisetest()
             std::cout << "octaves     = " << octaves << std::endl;
             std::cout << "\n\n";
 
-            noisemap = genNoise(m_ScreenTilesWidth, m_ScreenTilesHeight, 0 + xshift, 0 + yshift, persistence, octaves, scale);
+            noisemap = genNoise(width, height, 0 + xshift, 0 + yshift, persistence, octaves, scale);
             needsrefresh = false;
         }
 
