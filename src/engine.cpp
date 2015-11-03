@@ -1296,6 +1296,9 @@ bool Engine::moveItem(Item *titem, std::vector<Item*> *isource, std::vector<Item
 std::vector< std::vector<int> > Engine::genNoise(int width, int height, int xoffset, int yoffset,
                                 float persistence, float octaves, float scale, int minval, int maxval)
 {
+    //seed
+    srand(m_Seed);
+
     //create a 2d array to store noise map
     std::vector< std::vector<int> > noisemap;
     noisemap.resize(height);
@@ -1340,6 +1343,8 @@ void Engine::noisetest()
 {
     bool quit = false;
     bool needsrefresh = false;
+    bool drawmask = false;
+    bool drawthreshold = false;
     enum _MODES{MODE_SCALE, MODE_PERSISTENCE, MODE_OCTAVES};
     int xshift = 0;
     int yshift = 0;
@@ -1354,11 +1359,41 @@ void Engine::noisetest()
     int width = m_ScreenTilesHeight;
     int height = m_ScreenTilesHeight;
 
+    //find smallest dimension for mask map
+    int mdim = width;
+    int threshold = 60;
+    float maskintensity = 1.f; // percentage 1.0 = 100%
+    if(height < width) mdim = height;
+    sf::Vector2i mcenter(mdim/2, mdim/2);
+    float centerdistance = getDistance(0,0, mcenter.x, mcenter.y);
+    //float gradientdist = centerdistance * maskintensity;
+    float scaler = 255.f / centerdistance;
+
+
+
     std::vector< std::vector<int> > noisemap = genNoise(width, height, 0,0, persistence, octaves, scale);
+    std::vector< std::vector<int> > maskmap;
+
+    //create mask map
+    maskmap.resize(mdim);
+    for(int i = 0; i < mdim; i++)
+    {
+        for(int n = 0; n < mdim; n++) maskmap[i].push_back(0);
+    }
+
+    //creat mask map gradient
+    for(int i = 0; i < mdim; i++)
+    {
+        for(int n = 0; n < mdim; n++)
+        {
+            //if(getDistance(mcenter.x, mcenter.y, n, i) > gradientdist)
+            maskmap[i][n] = getDistance(mcenter.x, mcenter.y, n, i) * scaler;
+        }
+    }
+
     //draw noise loop
 
     sf::RectangleShape tile(sf::Vector2f(m_TileWidth, m_TileHeight));
-
 
     while(!quit)
     {
@@ -1378,6 +1413,8 @@ void Engine::noisetest()
                 else if(event.key.code == sf::Keyboard::S) mode = MODE_SCALE;
                 else if(event.key.code == sf::Keyboard::P) mode = MODE_PERSISTENCE;
                 else if(event.key.code == sf::Keyboard::O) mode = MODE_OCTAVES;
+                else if(event.key.code == sf::Keyboard::M) drawmask = !drawmask;
+                else if(event.key.code == sf::Keyboard::T) drawthreshold = !drawthreshold;
                 else if(event.key.code == sf::Keyboard::Add)
                 {
                     switch(mode)
@@ -1424,7 +1461,30 @@ void Engine::noisetest()
 
             noisemap = genNoise(width, height, 0 + xshift, 0 + yshift, persistence, octaves, scale);
             needsrefresh = false;
+
+            //create mask if necessary
+            if(drawmask)
+            {
+                for(int i = 0; i < mdim; i++)
+                {
+                    for(int n = 0; n < mdim; n++)
+                    {
+                        noisemap[i][n] -= maskmap[i][n];
+
+                        //if applying threshold
+                        if(drawthreshold)
+                        {
+                            if(noisemap[i][n] < threshold) noisemap[i][n] = 0;
+                            else noisemap[i][n] = 255;
+                        }
+                    }
+                }
+
+
+
+            }
         }
+
 
         //draw
         for(int i = 0; i < int(noisemap.size()); i++)
@@ -1433,6 +1493,8 @@ void Engine::noisetest()
             {
                 tile.setPosition(n*m_TileWidth, i*m_TileHeight);
                 int shade = noisemap[i][n];
+                if(shade < 0) shade = 0;
+
                 tile.setFillColor(sf::Color(shade,shade,shade));
 
                 m_Screen->draw(tile);
