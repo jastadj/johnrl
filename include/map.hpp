@@ -39,6 +39,9 @@ private:
     int m_GlobalX;
     int m_GlobalY;
 
+    //procedural generation
+    void genLake(int lakesize);
+
 public:
     MapChunk(int nglobalx, int nglobaly, int width = MAPWIDTH, int height = MAPHEIGHT);
     ~MapChunk();

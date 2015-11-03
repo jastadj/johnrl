@@ -67,10 +67,7 @@ private:
     std::vector < Item* > m_ItemDB;
     std::vector < Liquid*> m_Liquids;
 
-    //noise
-    std::vector< std::vector<int> > genNoise(int width, int height, int xoffset = 0, int yoffset = 0,
-                                             float persistence = 0.7, float octaves = 6, float scale = 9,
-                                             int minval = 0, int maxval = 255);
+
 
     //game objects
     long m_Seed;
@@ -133,6 +130,12 @@ public:
     MapChunk *testmap;
     bool validWalkableTile(int x, int y);
     int getDirectionFromUser(sf::Vector2i *mcoord = NULL);
+
+
+    //noise
+    std::vector< std::vector<int> > genNoise(int width, int height, int xoffset = 0, int yoffset = 0,
+                                             float persistence = 0.7, float octaves = 6, float scale = 9,
+                                             int minval = 0, int maxval = 255);
 
 
     void debugtest();

@@ -75,7 +75,7 @@ void Engine::start()
     else std::cout << "failed.\n";
 
     //debug noise
-    noisetest();
+    //noisetest();
 
     std::cout << "Starting new game.\n";
     newGame();

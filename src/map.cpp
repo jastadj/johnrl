@@ -55,7 +55,8 @@ MapChunk::MapChunk(int nglobalx, int nglobaly, int width, int height)
     }
 
     //add some water tiles
-    for(int i = 0; i < 10; i++) setTile(rand()%MAPWIDTH, rand()%MAPHEIGHT, 13);
+    //for(int i = 0; i < 10; i++) setTile(rand()%MAPWIDTH, rand()%MAPHEIGHT, 13);
+    genLake(25);
 
 }
 
@@ -221,4 +222,133 @@ std::vector< Item*> MapChunk::getMapItemsAtTile(int x, int y)
     }
 
     return founditems;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+std::vector< std::vector<int> > MapChunk::genLake(int lakesize)
+{
+    Engine *eptr = NULL;
+    eptr = Engine::getInstance();
+
+    //noise settings
+    float scale = 9;
+    float octaves = 6;
+    float persistence = 0.7;
+
+    //noise mask
+    int threshold = 60;
+    float maskintensity = 1.f; // percentage 1.0 = 100%
+    sf::Vector2i mcenter(lakesize/2, lakesize/2);
+    float centerdistance = getDistance(0,0, mcenter.x, mcenter.y);
+    //float gradientdist = centerdistance * maskintensity;
+    float scaler = 255.f / centerdistance;
+
+
+
+    std::vector< std::vector<int> > noisemap = eptr->genNoise(lakesize, lakesize, rand()%2000, rand()%2000, persistence, octaves, scale);
+    std::vector< std::vector<int> > maskmap;
+
+    //create mask map
+    maskmap.resize(lakesize);
+    for(int i = 0; i < lakesize; i++)
+    {
+        for(int n = 0; n < lakesize; n++) maskmap[i].push_back(0);
+    }
+
+    //creat mask map gradient
+    for(int i = 0; i < lakesize; i++)
+    {
+        for(int n = 0; n < lakesize; n++)
+        {
+            //if(getDistance(mcenter.x, mcenter.y, n, i) > gradientdist)
+            maskmap[i][n] = getDistance(mcenter.x, mcenter.y, n, i) * scaler;
+        }
+    }
+
+    //apply mask to noise map
+    for(int i = 0; i < lakesize; i++)
+    {
+        for(int n = 0; n < lakesize; n++)
+        {
+            noisemap[i][n] -= maskmap[i][n];
+
+            if(noisemap[i][n] < threshold) noisemap[i][n] = 0;
+            else noisemap[i][n] = 255;
+        }
+    }
+
+    //replace 255 values with water tile
+    //apply mask to noise map
+    for(int i = 0; i < lakesize; i++)
+    {
+        for(int n = 0; n < lakesize; n++)
+        {
+            if(noisemap[i][n] == 255) noisemap[i][n] = 13;//eptr->getMapTile(13)->getTileID();
+        }
+    }
+
+    //trim off empty rows columns
+    sf::Vector2i tl(lakesize-1, lakesize-1);
+    sf::Vector2i br(0,0);
+    //top left trim
+    for(int i = 0; i < lakesize; i++)
+    {
+        for(int n = 0; n < lakesize; n++)
+        {
+            if(noisemap[i][n] == 13)
+            {
+                if( i < tl.y) tl.y = i;
+                if( n < tl.x) tl.x = n;
+            }
+        }
+    }
+    //bottom right trim
+    for(int i = lakesize-1; i >= 0; i--)
+    {
+        for(int n = lakesize-1; n >= 0; n--)
+        {
+            if(noisemap[i][n] == 13)
+            {
+                if( i > tl.y) tl.y = i;
+                if( n > tl.x) tl.x = n;
+            }
+        }
+    }
+
+    //transfer trimmed noise map to lakemap
+    std::vector< std::vector<int> > lakemap;
+    for(int i = tl.y; i <= br.y; i++)
+    {
+        lakemap.resize( lakemap.size()+1);
+
+        for(int n = tl.x; n <= br.x; n++)
+        {
+            lakemap[lakemap.size()-1].push_back( noisemap[i][n]);
+        }
+    }
+
+    if(lakemap.empty())
+    {
+        std::cout << "Error generating a lake.  Lake map is empty!\n";
+        return;
+    }
+
+    sf::IntRect lakedim;
+    lakedim.width = lakemap
+
+/*
+    //transfer noise map to map data
+    for(int i = 0; i < lakesize; i++)
+    {
+        for(int n = 0; n < lakesize; n++)
+        {
+            if(noisemap[i][n] == 13)
+            {
+                m_MapData[i][n] = 13;//eptr->getMapTile(13)->getTileID();
+            }
+        }
+    }
+*/
+
+
 }
