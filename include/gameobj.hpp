@@ -18,6 +18,7 @@ protected:
     int m_FGColor;
 
     bool m_Walkable;
+    bool m_PassesLight;
 
     sf::Vector2i m_Position;
 
@@ -38,6 +39,8 @@ public:
 
     void setWalkable(bool nwalk) { m_Walkable = nwalk;}
     bool isWalkable() { return m_Walkable;}
+    void setPassesLight(bool nlight) { m_PassesLight = nlight;}
+    bool passesLight() { return m_PassesLight;}
 
     virtual std::vector<std::string> saveDataToString()=0;
 

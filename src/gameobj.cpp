@@ -8,6 +8,7 @@ GameObj::GameObj()
     m_TileID = 63;
 
     m_Walkable = true;
+    m_PassesLight = true;
 }
 
 GameObj::~GameObj()

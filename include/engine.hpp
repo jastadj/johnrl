@@ -104,6 +104,7 @@ private:
     void drawItems();
     void drawStatus();
     void drawMessageQue();
+    bool inFOV(int sx, int sy, int tx, int ty);
 
 public:
     ~Engine();

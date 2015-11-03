@@ -56,7 +56,10 @@ MapChunk::MapChunk(int nglobalx, int nglobaly, int width, int height)
 
     //add some water tiles
     //for(int i = 0; i < 10; i++) setTile(rand()%MAPWIDTH, rand()%MAPHEIGHT, 13);
-    genLake(25);
+    for(int i = 0; i < 5; i++) genLake(25);
+
+    //add random walls
+    for(int i = 0; i < 15; i++) setTile(rand()%MAPWIDTH, rand()%MAPHEIGHT, 2);
 
 }
 
@@ -225,7 +228,7 @@ std::vector< Item*> MapChunk::getMapItemsAtTile(int x, int y)
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
-std::vector< std::vector<int> > MapChunk::genLake(int lakesize)
+void MapChunk::genLake(int lakesize)
 {
     Engine *eptr = NULL;
     eptr = Engine::getInstance();
@@ -309,12 +312,13 @@ std::vector< std::vector<int> > MapChunk::genLake(int lakesize)
         {
             if(noisemap[i][n] == 13)
             {
-                if( i > tl.y) tl.y = i;
-                if( n > tl.x) tl.x = n;
+                if( i > br.y) br.y = i;
+                if( n > br.x) br.x = n;
             }
         }
     }
 
+    std::cout << "tl.y = " << tl.y << " tl.x = " << tl.x << " br.y = " << br.y << " br.x = " << br.x << std::endl;
     //transfer trimmed noise map to lakemap
     std::vector< std::vector<int> > lakemap;
     for(int i = tl.y; i <= br.y; i++)
@@ -334,21 +338,23 @@ std::vector< std::vector<int> > MapChunk::genLake(int lakesize)
     }
 
     sf::IntRect lakedim;
-    lakedim.width = lakemap
+    lakedim.width = int(lakemap[0].size()-1);
+    lakedim.height = int(lakemap.size()-1);
+    //randomize lake position
+    lakedim.left = rand()%getDimensions().x;
+    lakedim.top = rand()%getDimensions().y;
 
-/*
-    //transfer noise map to map data
+    //transfer lake map to map data
     for(int i = 0; i < lakesize; i++)
     {
         for(int n = 0; n < lakesize; n++)
         {
             if(noisemap[i][n] == 13)
             {
-                m_MapData[i][n] = 13;//eptr->getMapTile(13)->getTileID();
+                if(n + lakedim.left < 0 || n + lakedim.left >= getDimensions().x || i + lakedim.top < 0 || i + lakedim.top >= getDimensions().y) continue;
+                m_MapData[i+lakedim.top][n+lakedim.left] = 13;//eptr->getMapTile(13)->getTileID();
             }
         }
     }
-*/
-
 
 }

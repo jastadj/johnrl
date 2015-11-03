@@ -242,6 +242,8 @@ bool Engine::initMapTiles()
     newtile = new MapTile;
     newtile->m_Name = "wall";
     newtile->m_TileID = int(219);
+    newtile->setPassesLight(false);
+    newtile->setWalkable(false);
     m_MapTiles.push_back(newtile);
 
     //**********START GRASS TILES***********
@@ -635,7 +637,7 @@ void Engine::drawMap()
             MapTile *ttile = getMapTile( testmap->getTile(n, i));
 
             if(posInViewport(n, i))
-            drawTileInViewport(n, i, ttile->getTileID(), ttile->getFGColor(), ttile->getBGColor());
+            if( inFOV(m_Player->getPosition().x, m_Player->getPosition().y, n, i) ) drawTileInViewport(n, i, ttile->getTileID(), ttile->getFGColor(), ttile->getBGColor());
 
         }
     }
@@ -647,9 +649,12 @@ void Engine::drawMonsters()
     {
         Monster *tmonster = (*testmap->getMapMonsters())[i];
 
-        if(posInViewport(tmonster->getPosition()))
-        drawTileInViewport(tmonster->getPosition().x, tmonster->getPosition().y, tmonster->getTileID(), tmonster->getFGColor(),
-                 tmonster->getBGColor());
+        sf::Vector2i tpos = tmonster->getPosition();
+
+        if(posInViewport(tpos))
+        if( inFOV(m_Player->getPosition().x, m_Player->getPosition().y, tpos.x, tpos.y) )
+            drawTileInViewport(tmonster->getPosition().x, tmonster->getPosition().y, tmonster->getTileID(),
+                    tmonster->getFGColor(), tmonster->getBGColor());
     }
 }
 
@@ -659,8 +664,10 @@ void Engine::drawItems()
     {
         Item *titem = (*testmap->getMapItems())[i];
 
-        if(posInViewport(titem->getPosition()))
-        drawTileInViewport(titem->getPosition().x, titem->getPosition().y, titem->getTileID(), titem->getFGColor(),
+        sf::Vector2i tpos = titem->getPosition();
+
+        if(posInViewport(tpos))
+        if( inFOV(m_Player->getPosition().x, m_Player->getPosition().y, tpos.x, tpos.y) ) drawTileInViewport(titem->getPosition().x, titem->getPosition().y, titem->getTileID(), titem->getFGColor(),
                  titem->getBGColor());
     }
 }
@@ -708,6 +715,87 @@ void Engine::drawMessageQue()
     {
         drawString(0, i, (*msgque)[i]->getString());
     }
+}
+
+bool Engine::inFOV(int sx, int sy, int tx, int ty)
+{
+    //some sight radius calculations should be done first to determine
+    //if this check should be performed in the first place...
+
+    //if checking source == destination
+    if(sx-tx == 0 && sy-ty == 0) return true;
+
+    //if los lands on y axis
+    if(sx-tx == 0)
+    {
+        //start from target and walk back to plr pos
+        for(int i = ty; i != sy; i+= (sy-ty)/abs(sy-ty))
+        {
+            //ignore first tile
+            if(i == ty) continue;
+            else
+            {
+                if( !m_MapTiles[testmap->getTile(tx,i)]->passesLight() ) return false;
+            }
+        }
+
+        //check passed, return true
+        return true;
+
+    }
+    else //if tile lands on x axis
+    if(sy-ty == 0)
+    {
+       //start from target and walk back to plr pos
+        for(int i = tx; i != sx; i+= (sx-tx)/abs(sx-tx))
+        {
+            //ignore first tile
+            if(i == tx) continue;
+            else //if tile is within p map
+            {
+                if( !m_MapTiles[testmap->getTile(i,ty)]->passesLight()) return false;
+            }
+        }
+
+        //check passed, return true
+        return true;
+    }
+
+    //y = mx+b
+    float m = (float(ty-sy)/float(tx-sx) );
+    float b = sy - (m*sx);
+
+    //if coords are on the same active map as plr
+    //if(gx == pgx && gy == pgy)
+    //{
+        for(int i = tx; i != sx; i+= (sx-tx)/abs(sx-tx))
+        {
+            //if first tile, ignore
+            if(i == tx) continue;
+
+            int tempx = i;
+            int tempy = round(m*i+b);
+
+            //check to see if target tile is passable
+            if( !m_MapTiles[testmap->getTile(tempx, tempy)]->passesLight()) return false;
+        }
+
+        for(int i = ty; i != sy; i+= (sy-ty)/abs(sy-ty))
+        {
+            //if first tile, ignore
+            if(i == ty) continue;
+
+            int tempx = round((i-b)/m);
+            int tempy = i;
+
+            //check to see if target tile is passable
+            if( !m_MapTiles[testmap->getTile(tempx, tempy)]->passesLight()) return false;
+        }
+
+        return true;
+
+
+    return false;
 }
 
 ///////////////////////////////////////////////////////////////////
@@ -1297,7 +1385,7 @@ std::vector< std::vector<int> > Engine::genNoise(int width, int height, int xoff
                                 float persistence, float octaves, float scale, int minval, int maxval)
 {
     //seed
-    srand(m_Seed);
+    //srand(m_Seed);
 
     //create a 2d array to store noise map
     std::vector< std::vector<int> > noisemap;
