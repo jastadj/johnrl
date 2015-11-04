@@ -417,10 +417,10 @@ bool Engine::initPlayer()
     return true;
 }
 
-bool Engine::newGame()
+bool Engine::newGame(long nseed)
 {
     //start new random seed
-    m_Seed = time(NULL);
+    m_Seed = nseed;
     srand(m_Seed);
     std::cout << "Randomizing seed : " << m_Seed << std::endl;
 

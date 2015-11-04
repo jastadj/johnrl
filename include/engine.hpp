@@ -50,7 +50,7 @@ private:
     bool initLiquids();
     bool initMap();
     bool initPlayer();
-    bool newGame();
+    bool newGame(long nseed = time(NULL) );
 
     //resources
     int m_TileWidth;
@@ -132,6 +132,7 @@ public:
     bool validWalkableTile(int x, int y);
     int getDirectionFromUser(sf::Vector2i *mcoord = NULL);
 
+    sf::Vector2i getGlobalPosition() { return m_Player->getGlobalPos();}
 
     //noise
     sf::Vector2i getNoiseRelPosition0() { return m_Player->getNoisePosRel0();}

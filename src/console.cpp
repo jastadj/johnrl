@@ -52,5 +52,13 @@ void Engine::parse(std::string ccmd)
     }
     else cmd = ccmd;
 
-    if(cmd == "newgame") newGame();
+    if(cmd == "newgame")
+    {
+        if(params.empty()) newGame();
+        else newGame( atol(params[0].c_str()));
+    }
+    else if(cmd == "seed")
+    {
+        std::cout << "seed = " << m_Seed << std::endl;
+    }
 }

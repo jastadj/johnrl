@@ -247,6 +247,8 @@ void MapChunk::genLake(int lakesize)
     float scaler = 255.f / centerdistance;
 
 
+    //sf::Vector2i noiserel0 = eptr->getNoiseRelPosition0();
+    //sf::Vector2i globalpos = eptr->getGlobalPosition();
 
     std::vector< std::vector<int> > noisemap = eptr->genNoise(lakesize, lakesize, rand()%2000, rand()%2000, persistence, octaves, scale);
     std::vector< std::vector<int> > maskmap;
