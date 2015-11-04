@@ -399,6 +399,8 @@ bool Engine::initLiquids()
 
 bool Engine::initMap()
 {
+    if(testmap != NULL) delete testmap;
+
     testmap = new MapChunk(0,0);
 
     return true;
