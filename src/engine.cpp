@@ -342,6 +342,18 @@ bool Engine::initMapTiles()
     newtile->setLiquid(m_Liquids[0]);
     newtile->setWalkable(false);
     m_MapTiles.push_back(newtile);
+
+    //tile 14
+    newtile = new MapTile;
+    newtile->m_Name = "tree";
+    newtile->m_TileID = 6;
+    newtile->m_FGColor = COLOR_B_GREEN;
+    newtile->setWalkable(false);
+    newtile->setPassesLight(false);
+    m_MapTiles.push_back(newtile);
+
+
+    std::cout << " - " << m_MapTiles.size() << " map tiles loaded - ";
     return true;
 }
 

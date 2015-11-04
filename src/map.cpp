@@ -54,12 +54,12 @@ MapChunk::MapChunk(int nglobalx, int nglobaly, int width, int height)
         }
     }
 
-    //add some water tiles
+    //add lakes
     //for(int i = 0; i < 10; i++) setTile(rand()%MAPWIDTH, rand()%MAPHEIGHT, 13);
     for(int i = 0; i < 5; i++) genLake(25);
 
-    //add random walls
-    for(int i = 0; i < 15; i++) setTile(rand()%MAPWIDTH, rand()%MAPHEIGHT, 2);
+    //add random trees
+    genTrees(100);
 
 }
 
@@ -359,4 +359,18 @@ void MapChunk::genLake(int lakesize)
         }
     }
 
+}
+
+void MapChunk::genTrees(int density)
+{
+    for(int i = 0; i < density; i++)
+    {
+        sf::Vector2i rpos(rand()%MAPWIDTH, rand()%MAPHEIGHT);
+
+        //check that tile is grass, then put tree there
+        if( m_MapData[rpos.y][rpos.x] >= 3 && m_MapData[rpos.y][rpos.x] <= 12)
+        {
+            m_MapData[rpos.y][rpos.x] = 14;
+        }
+    }
 }

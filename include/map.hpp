@@ -41,6 +41,7 @@ private:
 
     //procedural generation
     void genLake(int lakesize);
+    void genTrees(int density);
 
 public:
     MapChunk(int nglobalx, int nglobaly, int width = MAPWIDTH, int height = MAPHEIGHT);
