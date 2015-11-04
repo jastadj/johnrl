@@ -17,6 +17,7 @@ Engine::Engine()
     m_Player = NULL;
     testmap = NULL;
     m_MessageManager = NULL;
+    console_thread = NULL;
 
     //default initialization
     m_FrameRateLimit = 30;
@@ -48,6 +49,10 @@ Engine::~Engine()
 
 void Engine::start()
 {
+    //start console thread
+    console_thread = new sf::Thread(&Engine::console, this);
+    console_thread->launch();
+
     //init screen
     std::cout << "Initializing screen...";
     if(initScreen()) std::cout << "done.\n";

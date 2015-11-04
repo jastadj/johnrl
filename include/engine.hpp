@@ -139,8 +139,12 @@ public:
                                              int minval = 0, int maxval = 255);
 
 
+    //debug stuff
     void debugtest();
     void noisetest();
+    sf::Thread *console_thread;
+    void console(); //see console.cpp
+    void parse(std::string ccmd); // see console.cpp
 };
 
 #endif // CLASS_ENGINE
