@@ -59,6 +59,7 @@
 		<Unit filename="include/simplexnoise.h" />
 		<Unit filename="include/tools.hpp" />
 		<Unit filename="src/actor.cpp" />
+		<Unit filename="src/console.cpp" />
 		<Unit filename="src/container.cpp" />
 		<Unit filename="src/engine.cpp" />
 		<Unit filename="src/gameobj.cpp" />

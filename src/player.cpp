@@ -6,6 +6,9 @@ Player::Player()
 {
     m_TileID = int('@');
 
+    m_GlobalPos = sf::Vector2i(0,0);
+    m_NoisePosRel0 = sf::Vector2i(rand()%2000, rand()%2000);
+
     m_TurnCounter = 0;
 
     m_MetabolismHydration = 300;

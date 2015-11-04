@@ -134,6 +134,7 @@ public:
 
 
     //noise
+    sf::Vector2i getNoiseRelPosition0() { return m_Player->getNoisePosRel0();}
     std::vector< std::vector<int> > genNoise(int width, int height, int xoffset = 0, int yoffset = 0,
                                              float persistence = 0.7, float octaves = 6, float scale = 9,
                                              int minval = 0, int maxval = 255);

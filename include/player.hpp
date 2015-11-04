@@ -9,6 +9,10 @@ private:
 
     int m_TurnCounter;
 
+    //relative position 0,0 for world map noise
+    sf::Vector2i m_NoisePosRel0;
+    sf::Vector2i m_GlobalPos;
+
     //hydration
     int m_MetabolismHydration;
     int m_HydrationLevel;
@@ -20,6 +24,9 @@ public:
     ~Player();
 
     int getType() { return OBJ_PLAYER;}
+
+    sf::Vector2i getNoisePosRel0() { return m_NoisePosRel0;}
+    sf::Vector2i getGlobalPos() { return m_GlobalPos;}
 
     bool isAlive();
 
