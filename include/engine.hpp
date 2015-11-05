@@ -14,6 +14,13 @@
 #include "itemtypes.hpp"
 #include "message.hpp"
 
+struct consolecmd
+{
+    std::string cmd;
+    std::string helptxt;
+    consolecmd *parent;
+};
+
 class Engine
 {
 private:
@@ -146,6 +153,7 @@ public:
     void noisetest();
     sf::Thread *console_thread;
     void console(); //see console.cpp
+    std::vector<consolecmd*> cCommands;
     void parse(std::string ccmd); // see console.cpp
 };
 
