@@ -105,6 +105,8 @@ private:
     void drawTileInViewport(int x, int y, int tilenum, int fgcolor = 1, int bgcolor = 0);
     //void drawTileInViewport(int x, int y, char ch, int fgcolor = 1, int bgcolor = 0);
     void drawString(int x, int y, std::string tstring, int fgcolor = 1, int bgcolor = 0);
+    void drawWindow(int x, int y, int width, int height,int fgcolor = COLOR_WHITE, int bgcolor = COLOR_BLACK,
+                     int tl = 218, int hor = 196, int tr = 191, int vert = 179, int bl = 192, int br = 217, int filltile = 0);
     void drawPlayer();
     void drawMap();
     void drawMonsters();
@@ -123,6 +125,8 @@ public:
     }
 
     void start();
+
+    sf::RenderWindow *getScreen() { return m_Screen;}
 
     long getSeed() { return m_Seed;}
 

@@ -637,6 +637,57 @@ void Engine::drawString(int x, int y, std::string tstring, int fgcolor, int bgco
     }
 }
 
+void Engine::drawWindow( int x, int y, int width, int height, int fgcolor, int bgcolor,
+                int tl, int hor, int tr, int vert, int bl, int br, int filltile)
+{
+    //2d array for width/height
+    std::vector< std::vector< int> > tbox;
+    tbox.resize(height);
+    for(int i = 0; i < height; i++) tbox[i].resize(width);
+
+    //set window tiles
+    for(int i = 0; i < height; i++)
+    {
+        for(int n = 0; n < width; n++)
+        {
+            //top
+            if(i == 0)
+            {
+                //top left
+                if(n == 0) tbox[i][n] = tl;
+                //top right
+                else if(n == width-1) tbox[i][n] = tr;
+                //top line
+                else tbox[i][n] = hor;
+            }
+            //bottom
+            else if(i == height-1)
+            {
+                //top left
+                if(n == 0) tbox[i][n] = bl;
+                //top right
+                else if(n == width-1) tbox[i][n] = br;
+                //top line
+                else tbox[i][n] = hor;
+            }
+            //sides
+            else if(n == 0) tbox[i][n] = vert;
+            else if(n == width-1) tbox[i][n] = vert;
+            else tbox[i][n] = filltile;
+
+        }
+    }
+
+    //draw window tiles
+    for(int i = 0; i < height; i++)
+    {
+        for(int n = 0; n < width; n++)
+        {
+            drawTile(x+n, y+i, tbox[i][n], fgcolor, bgcolor);
+        }
+    }
+}
+
 void Engine::drawPlayer()
 {
     if(m_Player == NULL) return;

@@ -14,7 +14,9 @@ void Engine::console()
     cCommands.push_back(newcmd);
     newcmd = new consolecmd{"test","This is a test", NULL};
     cCommands.push_back(newcmd);
-    newcmd = new consolecmd{"print","Prints parameters", cCommands.back()};
+    newcmd = new consolecmd{"playersave", "Print player save data", cCommands[cCommands.size()-1]};
+    cCommands.push_back(newcmd);
+    newcmd = new consolecmd{"print","Prints parameters", cCommands[cCommands.size()-2]};
     cCommands.push_back(newcmd);
 
     while(!quit)
@@ -102,6 +104,32 @@ void Engine::parse(std::string ccmd)
     else if(cmd == "seed")
     {
         std::cout << "seed = " << m_Seed << std::endl;
+    }
+    else if(cmd == "test")
+    {
+        if( int(params.size()) == 1)
+        {
+            if(params[0] == "playersave")
+            {
+                std::vector<std::string> savedata = m_Player->saveDataToString();
+
+                for(int i = 0; i < int(savedata.size()); i++)
+                {
+                    std::cout << savedata[i];
+                }
+                std::cout << "\n";
+            }
+            else
+            {
+                std::cout << "Not a valid test sub-command / param\n";
+                return;
+            }
+        }
+        else
+        {
+                std::cout << "Not a valid test sub-command / param\n";
+                return;
+        }
     }
     else
     {

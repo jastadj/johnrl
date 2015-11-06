@@ -58,3 +58,5 @@ void MessageManager::addMessage(std::string nmsg)
 {
     m_MessageQue.push_back(new Message(nmsg));
 }
+
+//////////////////////////////////////////////////////////////

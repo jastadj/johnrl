@@ -35,4 +35,5 @@ public:
 
 
 };
+
 #endif // CLASS_MESSAGE
