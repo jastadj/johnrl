@@ -4,6 +4,7 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 
+#include "sfmlcurs.hpp"
 #include "simplexnoise.h"
 #include "defs.hpp"
 #include "tools.hpp"
@@ -32,11 +33,10 @@ private:
 
     //screen elements
     sf::RenderWindow *m_Screen;
+    SFMLCurs *m_Curses;
+    int m_ScreenTilesWidth;
+    int m_ScreenTilesHeight;
     int m_FrameRateLimit;
-    std::vector<sf::Color> m_AsciiColors;
-    int m_TermCurrentFGColor;
-    int m_TermCurrentBGColor;
-    sf::Vector2f m_TermCurrentCursorPos;
 
     //viewport
     sf::IntRect m_Viewport;
@@ -50,7 +50,7 @@ private:
 
     //init
     bool initScreen();
-    bool initTileArt();
+    bool initCurses();
     bool initMapTiles();
     bool initMonsters();
     bool initItems();
@@ -60,14 +60,6 @@ private:
     bool newGame(long nseed = time(NULL) );
 
     //resources
-    int m_TileWidth;
-    int m_TileHeight;
-    int m_TileSheetWidth;
-    int m_TileSheetHeight;
-    int m_ScreenTilesWidth;
-    int m_ScreenTilesHeight;
-    std::vector< std::vector< sf::Texture> > m_TileTextures;
-    std::vector <std::vector< std::vector< sf::Sprite> > > m_TileSprites;
     std::vector< MapTile* > m_MapTiles;
     MapTile *getMapTile(int tilenum);
     std::vector < Monster* > m_MonsterDB;

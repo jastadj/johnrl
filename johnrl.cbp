@@ -56,6 +56,7 @@
 		<Unit filename="include/message.hpp" />
 		<Unit filename="include/monster.hpp" />
 		<Unit filename="include/player.hpp" />
+		<Unit filename="include/sfmlcurs.hpp" />
 		<Unit filename="include/simplexnoise.h" />
 		<Unit filename="include/tools.hpp" />
 		<Unit filename="src/actor.cpp" />
@@ -70,6 +71,7 @@
 		<Unit filename="src/message.cpp" />
 		<Unit filename="src/monster.cpp" />
 		<Unit filename="src/player.cpp" />
+		<Unit filename="src/sfmlcurs.cpp" />
 		<Unit filename="src/simplexnoise.cpp" />
 		<Unit filename="src/tools.cpp" />
 		<Extensions>
