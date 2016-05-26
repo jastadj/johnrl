@@ -33,6 +33,6 @@ public:
     void addToInventory(Item *titem) { m_Inventory.push_back(titem);}
 
     //actions
-    bool walkDir(int direction);
+    bool walkDir(int direction, bool canLeaveMap = false);
 };
 #endif // CLASS_ACTOR

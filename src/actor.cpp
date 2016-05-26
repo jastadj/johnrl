@@ -23,7 +23,7 @@ bool Actor::isAlive()
 
     return true;
 }
-bool Actor::walkDir(int direction)
+bool Actor::walkDir(int direction, bool canLeaveMap)
 {
     Engine *eptr = NULL;
     eptr = Engine::getInstance();
@@ -72,7 +72,12 @@ bool Actor::walkDir(int direction)
     //check that newpos is a valid walkable tile
     if(!eptr->validWalkableTile(newpos.x, newpos.y))
     {
-        return false;
+        //if actor is able to leave the map, then check if newpos is outside map
+        if(canLeaveMap)
+        {
+            need to comeup with method to transfer an actor from one map to another
+        }
+        else return false;
     }
 
     m_Position = newpos;
