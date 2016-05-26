@@ -32,6 +32,7 @@ class MapChunk
 private:
 
     std::vector < std::vector< int > > m_MapData;
+    std::vector < std::vector< bool > > m_MapDataExplored;
 
     std::vector< Monster*> m_MapMonsters;
     std::vector< Item*> m_MapItems;
@@ -58,6 +59,8 @@ public:
     void setTile(int x, int y, int tileid);
     void setTileRandom(int x, int y, int tileidstart, int tileidend);
     sf::Vector2i getRandomValidPosition();
+    bool tileExplored(int x, int y);
+    void setExplored(int x, int y, bool isexplored);
 
     bool addMonster(int monsterid, int x, int y);
     bool addMonster(int monsterid, sf::Vector2i pos);

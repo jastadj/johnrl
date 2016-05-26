@@ -44,6 +44,8 @@ MapChunk::MapChunk(int nglobalx, int nglobaly, int width, int height)
     //resize array
     m_MapData.resize(height);
     for(int i = 0; i < int(m_MapData.size()); i++) m_MapData[i].resize(width);
+    m_MapDataExplored.resize(height);
+    for(int i = 0; i < int(m_MapDataExplored.size()); i++) m_MapDataExplored[i].resize(width);
 
     //fillMap(1);
     for(int i = 0; i < int(m_MapData.size()); i++)
@@ -51,6 +53,8 @@ MapChunk::MapChunk(int nglobalx, int nglobaly, int width, int height)
         for(int n = 0; n < int(m_MapData[0].size()); n++)
         {
             setTileRandom(n, i, 3, 12);
+
+            m_MapDataExplored[i][n] = false;
         }
     }
 
@@ -110,6 +114,22 @@ bool MapChunk::mapDataValid(int x, int y)
     }
 
     return true;
+}
+
+bool MapChunk::tileExplored(int x, int y)
+{
+    sf::Vector2i dims = getDimensions();
+    if( x < 0 || x >= dims.x || y < 0 || y >= dims.y) return false;
+
+    return m_MapDataExplored[y][x];
+}
+
+void MapChunk::setExplored(int x, int y, bool isexplored)
+{
+    sf::Vector2i dims = getDimensions();
+    if( x < 0 || x >= dims.x || y < 0 || y >= dims.y) return;
+
+    m_MapDataExplored[y][x] = isexplored;
 }
 
 int MapChunk::getTile(int x, int y)

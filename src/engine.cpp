@@ -594,7 +594,17 @@ void Engine::drawMap()
             MapTile *ttile = getMapTile( testmap->getTile(n, i));
 
             if(posInViewport(n, i))
-            if( inFOV(m_Player->getPosition().x, m_Player->getPosition().y, n, i) ) drawTileInViewport(n, i, ttile->getTileID(), ttile->getFGColor(), ttile->getBGColor());
+            {
+                if( inFOV(m_Player->getPosition().x, m_Player->getPosition().y, n, i) )
+                {
+                    drawTileInViewport(n, i, ttile->getTileID(), ttile->getFGColor(), ttile->getBGColor());
+
+                    if(!testmap->tileExplored(n,i)) testmap->setExplored(n, i, true);
+                }
+                else
+                    if( testmap->tileExplored(n, i) ) drawTileInViewport(n, i, ttile->getTileID(), SFC_WHITE, SFC_BLACK);
+
+            }
 
         }
     }
