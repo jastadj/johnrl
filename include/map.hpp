@@ -37,6 +37,11 @@ private:
     std::vector< Monster*> m_MapMonsters;
     std::vector< Item*> m_MapItems;
 
+    //connected maps
+    std::vector< MapChunk*> m_AdjacentMaps;
+    bool hasAdjacent(int direction);
+    bool connectAdjacent(int direction, MapChunk *tmap);
+
     int m_GlobalX;
     int m_GlobalY;
 

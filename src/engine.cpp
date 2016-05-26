@@ -15,7 +15,7 @@ Engine::Engine()
 
     //init pointers to null
     m_Player = NULL;
-    testmap = NULL;
+    m_CurrentMap = NULL;
     m_MessageManager = NULL;
     console_thread = NULL;
     m_Curses = NULL;
@@ -320,9 +320,13 @@ bool Engine::initLiquids()
 
 bool Engine::initMap()
 {
-    if(testmap != NULL) delete testmap;
+    //clear map data
+    m_CurrentMap = NULL;
+    for(int i = 0; i < int(m_Maps.size()); i++) delete m_Maps[i];
 
-    testmap = new MapChunk(0,0);
+    //create map data
+    m_CurrentMap = new MapChunk(0,0);
+    m_Maps.push_back(m_CurrentMap);
 
     return true;
 }
@@ -363,10 +367,10 @@ bool Engine::newGame(long nseed)
     std::cout << "done.\n";
 
     //create unicorn
-    testmap->addMonster(0, testmap->getRandomValidPosition());
+    m_CurrentMap->addMonster(0, m_CurrentMap->getRandomValidPosition());
 
     //randomize player starting position
-    m_Player->setPosition(testmap->getRandomValidPosition());
+    m_Player->setPosition(m_CurrentMap->getRandomValidPosition());
 
     //add water bottle to player
     Item *pitem = createItem(0);
@@ -480,10 +484,10 @@ void Engine::centerViewport(int x, int y)
 
     //if map moves off viewport, keep map in view
     if(m_Viewport.left < 0) m_Viewport.left = 0;
-    else if(m_Viewport.left + m_Viewport.width >= testmap->getDimensions().x) m_Viewport.left = testmap->getDimensions().x - m_Viewport.width;
+    else if(m_Viewport.left + m_Viewport.width >= m_CurrentMap->getDimensions().x) m_Viewport.left = m_CurrentMap->getDimensions().x - m_Viewport.width;
 
     if(m_Viewport.top < 0) m_Viewport.top = 0;
-    else if(m_Viewport.top + m_Viewport.height >= testmap->getDimensions().y) m_Viewport.top = testmap->getDimensions().y - m_Viewport.height;
+    else if(m_Viewport.top + m_Viewport.height >= m_CurrentMap->getDimensions().y) m_Viewport.top = m_CurrentMap->getDimensions().y - m_Viewport.height;
 }
 
 bool Engine::posInViewport(sf::Vector2i pos)
@@ -587,11 +591,11 @@ void Engine::drawPlayer()
 void Engine::drawMap()
 {
 
-    for(int i = 0; i < testmap->getDimensions().y; i++)
+    for(int i = 0; i < m_CurrentMap->getDimensions().y; i++)
     {
-        for(int n = 0; n < testmap->getDimensions().x; n++)
+        for(int n = 0; n < m_CurrentMap->getDimensions().x; n++)
         {
-            MapTile *ttile = getMapTile( testmap->getTile(n, i));
+            MapTile *ttile = getMapTile( m_CurrentMap->getTile(n, i));
 
             if(posInViewport(n, i))
             {
@@ -599,10 +603,10 @@ void Engine::drawMap()
                 {
                     drawTileInViewport(n, i, ttile->getTileID(), ttile->getFGColor(), ttile->getBGColor());
 
-                    if(!testmap->tileExplored(n,i)) testmap->setExplored(n, i, true);
+                    if(!m_CurrentMap->tileExplored(n,i)) m_CurrentMap->setExplored(n, i, true);
                 }
                 else
-                    if( testmap->tileExplored(n, i) ) drawTileInViewport(n, i, ttile->getTileID(), SFC_WHITE, SFC_BLACK);
+                    if( m_CurrentMap->tileExplored(n, i) ) drawTileInViewport(n, i, ttile->getTileID(), SFC_WHITE, SFC_BLACK);
 
             }
 
@@ -612,9 +616,9 @@ void Engine::drawMap()
 
 void Engine::drawMonsters()
 {
-    for(int i = 0; i < int(testmap->getMapMonsters()->size()); i++)
+    for(int i = 0; i < int(m_CurrentMap->getMapMonsters()->size()); i++)
     {
-        Monster *tmonster = (*testmap->getMapMonsters())[i];
+        Monster *tmonster = (*m_CurrentMap->getMapMonsters())[i];
 
         sf::Vector2i tpos = tmonster->getPosition();
 
@@ -627,9 +631,9 @@ void Engine::drawMonsters()
 
 void Engine::drawItems()
 {
-    for(int i = 0; i < int(testmap->getMapItems()->size()); i++)
+    for(int i = 0; i < int(m_CurrentMap->getMapItems()->size()); i++)
     {
-        Item *titem = (*testmap->getMapItems())[i];
+        Item *titem = (*m_CurrentMap->getMapItems())[i];
 
         sf::Vector2i tpos = titem->getPosition();
 
@@ -702,7 +706,7 @@ bool Engine::inFOV(int sx, int sy, int tx, int ty)
             if(i == ty) continue;
             else
             {
-                if( !m_MapTiles[testmap->getTile(tx,i)]->passesLight() ) return false;
+                if( !m_MapTiles[m_CurrentMap->getTile(tx,i)]->passesLight() ) return false;
             }
         }
 
@@ -720,7 +724,7 @@ bool Engine::inFOV(int sx, int sy, int tx, int ty)
             if(i == tx) continue;
             else //if tile is within p map
             {
-                if( !m_MapTiles[testmap->getTile(i,ty)]->passesLight()) return false;
+                if( !m_MapTiles[m_CurrentMap->getTile(i,ty)]->passesLight()) return false;
             }
         }
 
@@ -744,7 +748,7 @@ bool Engine::inFOV(int sx, int sy, int tx, int ty)
             int tempy = round(m*i+b);
 
             //check to see if target tile is passable
-            if( !m_MapTiles[testmap->getTile(tempx, tempy)]->passesLight()) return false;
+            if( !m_MapTiles[m_CurrentMap->getTile(tempx, tempy)]->passesLight()) return false;
         }
 
         for(int i = ty; i != sy; i+= (sy-ty)/abs(sy-ty))
@@ -756,7 +760,7 @@ bool Engine::inFOV(int sx, int sy, int tx, int ty)
             int tempy = i;
 
             //check to see if target tile is passable
-            if( !m_MapTiles[testmap->getTile(tempx, tempy)]->passesLight()) return false;
+            if( !m_MapTiles[m_CurrentMap->getTile(tempx, tempy)]->passesLight()) return false;
         }
 
         return true;
@@ -1042,10 +1046,10 @@ bool Engine::fillLiquidContainer()
     getDirectionFromUser(&ppos);
 
     //check that tile is valid liquid source
-    if(m_MapTiles[testmap->getTile(ppos.x, ppos.y)]->hasLiquid() )
+    if(m_MapTiles[m_CurrentMap->getTile(ppos.x, ppos.y)]->hasLiquid() )
     {
         //check if item container type can fill from source liquid
-        Liquid *source = m_MapTiles[testmap->getTile(ppos.x, ppos.y)]->getLiquid();
+        Liquid *source = m_MapTiles[m_CurrentMap->getTile(ppos.x, ppos.y)]->getLiquid();
 
         //if container is not empty
         if(!tcl->isEmpty())
@@ -1085,7 +1089,7 @@ void Engine::dropItemUI()
     if(titem == NULL) return;
 
     //move item from player inventory to map items
-    moveItem(titem, m_Player->getInventory(), testmap->getMapItems());
+    moveItem(titem, m_Player->getInventory(), m_CurrentMap->getMapItems());
 
     //set item's position to players position
     titem->setPosition( m_Player->getPosition());
@@ -1103,7 +1107,7 @@ void Engine::playerTurnUpdates()
 
 void Engine::pickupItemFromTileUI(int x, int y)
 {
-    std::vector< Item*> ilist = testmap->getMapItemsAtTile(x, y);
+    std::vector< Item*> ilist = m_CurrentMap->getMapItemsAtTile(x, y);
     std::vector< Item*> selecteditems;
 
     if(ilist.empty()) return;
@@ -1120,7 +1124,7 @@ void Engine::pickupItemFromTileUI(int x, int y)
     //move selected items to player inv
     for(int i = 0; i < int(selecteditems.size()); i++)
     {
-        if(moveItem(selecteditems[i], testmap->getMapItems(), m_Player->getInventory()) )
+        if(moveItem(selecteditems[i], m_CurrentMap->getMapItems(), m_Player->getInventory()) )
         {
             std::stringstream pstr;
             pstr << "Picked up " << selecteditems[i]->getName();
@@ -1160,15 +1164,15 @@ bool Engine::validWalkableTile(int x, int y)
     sf::Vector2i tpos(x,y);
 
     //check that tile is within map dimensions
-    sf::Vector2i mapdim = testmap->getDimensions();
+    sf::Vector2i mapdim = m_CurrentMap->getDimensions();
     if(x < 0 || y < 0 || x >= mapdim.x || y >= mapdim.y) return false;
 
     //check that tile is walkable
-    MapTile *ttile = getMapTile( testmap->getTile(x,y) );
+    MapTile *ttile = getMapTile( m_CurrentMap->getTile(x,y) );
     if(!ttile->isWalkable()) return false;
 
     //check that there are no actors there
-    std::vector<Monster*> *actors = testmap->getMapMonsters();
+    std::vector<Monster*> *actors = m_CurrentMap->getMapMonsters();
     for(int i = 0; i < int(actors->size()); i++)
     {
         if((*actors)[i]->getPosition() == tpos) return false;

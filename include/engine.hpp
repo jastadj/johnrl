@@ -72,6 +72,8 @@ private:
     long m_Seed;
     MessageManager *m_MessageManager;
     Player *m_Player;
+    std::vector< MapChunk*> m_Maps;
+    MapChunk *m_CurrentMap;
 
     //player actions
     void playerDeath();
@@ -131,7 +133,6 @@ public:
     Item *createItem(int itemid);
     bool moveItem(Item *titem, std::vector<Item*> *isource, std::vector<Item*> *idest);
 
-    MapChunk *testmap;
     bool validWalkableTile(int x, int y);
     int getDirectionFromUser(sf::Vector2i *mcoord = NULL);
 

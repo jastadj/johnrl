@@ -41,6 +41,10 @@ MapChunk::MapChunk(int nglobalx, int nglobaly, int width, int height)
     eptr = Engine::getInstance();
     srand(eptr->getSeed());
 
+    //init adjacent maps
+    m_AdjacentMaps.resize(DIR_TOTAL);
+    for(int i = 0; i < DIR_TOTAL; i++) m_AdjacentMaps[i] = NULL;
+
     //resize array
     m_MapData.resize(height);
     for(int i = 0; i < int(m_MapData.size()); i++) m_MapData[i].resize(width);
@@ -112,6 +116,72 @@ bool MapChunk::mapDataValid(int x, int y)
         std::cout << "Error getting tile : x,y is out of map data bounds!\n";
         return false;
     }
+
+    return true;
+}
+
+bool MapChunk::hasAdjacent(int direction)
+{
+    //validate direction
+    if(direction < 0 || direction >= DIR_TOTAL) return false;
+
+    //if an adjacent map has a pointer, return true
+    if(m_AdjacentMaps[direction] != NULL) return true;
+    else return false;
+}
+
+bool MapChunk::connectAdjacent(int direction, MapChunk *tmap)
+{
+    int inverse_direction = DIR_NONE;
+
+    //validate direciton
+    if(direction < 0 || direction >= DIR_TOTAL) return false;
+
+    //get inverse direction
+    switch( direction)
+    {
+    case DIR_DOWN:
+        inverse_direction = DIR_UP;
+        break;
+    case DIR_UP:
+        inverse_direction = DIR_DOWN;
+        break;
+    case DIR_NORTH:
+        inverse_direction = DIR_SOUTH;
+        break;
+    case DIR_SOUTH:
+        inverse_direction = DIR_NORTH;
+        break;
+    case DIR_WEST:
+        inverse_direction = DIR_EAST;
+        break;
+    case DIR_EAST:
+        inverse_direction = DIR_WEST;
+        break;
+    default:
+        break;
+    }
+
+    //no valid direction for adjacent maps used, return
+    if(inverse_direction == DIR_NONE) return false;
+
+    //if attempting to null out a connection
+    if(tmap == NULL)
+    {
+        //there is a map connected in target direction
+        if(m_AdjacentMaps[direction] != NULL)
+        {
+            //disconnect adjacent map to this map
+            m_AdjacentMaps[direction]->m_AdjacentMaps[inverse_direction] = NULL;
+            m_AdjacentMaps[direction] = NULL;
+        }
+
+        return true;
+    }
+
+    //connect map to direction
+    m_AdjacentMaps[direction] = tmap;
+    tmap->m_AdjacentMaps[inverse_direction] = this;
 
     return true;
 }
