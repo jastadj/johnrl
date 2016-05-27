@@ -23,6 +23,8 @@ bool Actor::isAlive()
 
     return true;
 }
+
+/*
 bool Actor::walkDir(int direction, bool canLeaveMap)
 {
     Engine *eptr = NULL;
@@ -75,7 +77,7 @@ bool Actor::walkDir(int direction, bool canLeaveMap)
         //if actor is able to leave the map, then check if newpos is outside map
         if(canLeaveMap)
         {
-            need to comeup with method to transfer an actor from one map to another
+
         }
         else return false;
     }
@@ -97,4 +99,4 @@ bool Actor::walkDir(int direction, bool canLeaveMap)
 
     return true;
 }
-
+*/

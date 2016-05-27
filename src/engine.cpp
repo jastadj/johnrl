@@ -412,35 +412,35 @@ void Engine::mainLoop()
                 else if(event.key.code == sf::Keyboard::G) pickupItemFromTileUI(m_Player->getPosition());
                 else if(event.key.code == sf::Keyboard::Left || event.key.code == sf::Keyboard::Numpad4)
                 {
-                    m_Player->walkDir(DIR_WEST);
+                    walkInDir(m_Player, DIR_WEST);
                 }
                 else if(event.key.code == sf::Keyboard::Right || event.key.code == sf::Keyboard::Numpad6)
                 {
-                    m_Player->walkDir(DIR_EAST);
+                    walkInDir(m_Player, DIR_EAST);
                 }
                 else if(event.key.code == sf::Keyboard::Up || event.key.code == sf::Keyboard::Numpad8)
                 {
-                    m_Player->walkDir(DIR_NORTH);
+                    walkInDir(m_Player, DIR_NORTH);
                 }
                 else if(event.key.code == sf::Keyboard::Down || event.key.code == sf::Keyboard::Numpad2)
                 {
-                    m_Player->walkDir(DIR_SOUTH);
+                    walkInDir(m_Player, DIR_SOUTH);
                 }
                 else if(event.key.code == sf::Keyboard::Numpad1)
                 {
-                    m_Player->walkDir(DIR_SW);
+                    walkInDir(m_Player, DIR_SW);
                 }
                 else if(event.key.code == sf::Keyboard::Numpad3)
                 {
-                    m_Player->walkDir(DIR_SE);
+                    walkInDir(m_Player, DIR_SE);
                 }
                 else if(event.key.code == sf::Keyboard::Numpad7)
                 {
-                    m_Player->walkDir(DIR_NW);
+                    walkInDir(m_Player, DIR_NW);
                 }
                 else if(event.key.code == sf::Keyboard::Numpad9)
                 {
-                    m_Player->walkDir(DIR_NE);
+                    walkInDir(m_Player, DIR_NE);
                 }
             }
         }
@@ -1265,6 +1265,77 @@ int Engine::getDirectionFromUser(sf::Vector2i *mcoord)
 
     return dir;
 }
+
+bool Engine::walkInDir(Actor *tactor, int direction)
+{
+    sf::Vector2i newpos = tactor->getPosition();
+
+    if(tactor == NULL) return false;
+
+    switch(direction)
+    {
+    case DIR_NONE:
+        break;
+    case DIR_SW:
+        newpos.x--;
+        newpos.y++;
+        break;
+    case DIR_SOUTH:
+        newpos.y++;
+        break;
+    case DIR_SE:
+        newpos.x++;
+        newpos.y++;
+        break;
+    case DIR_WEST:
+        newpos.x--;
+        break;
+    case DIR_SELF:
+        break;
+    case DIR_EAST:
+        newpos.x++;
+        break;
+    case DIR_NW:
+        newpos.x--;
+        newpos.y--;
+        break;
+    case DIR_NORTH:
+        newpos.y--;
+        break;
+    case DIR_NE:
+        newpos.x++;
+        newpos.y--;
+        break;
+    default:
+        std::cout << "Unable to walk in undefined direction!  dir = " << direction << std::endl;
+        break;
+    }
+
+    //check that newpos is a valid walkable tile
+    if(!validWalkableTile(newpos.x, newpos.y))
+    {
+        //need to come up with method to allow actors to walk off current map to adjacent map
+        return false;
+    }
+
+    //set new position
+    tactor->setPosition(newpos);
+
+    //if moving player, increase turn
+    if(tactor->getType() == OBJ_PLAYER)
+    {
+        //show what items are here at new pos?
+        Player *pactor = NULL;
+        pactor = dynamic_cast<Player*>(tactor);
+        if(pactor != NULL) pactor->doTurn();
+
+        //set turn counter to true
+    }
+
+    return true;
+}
+
+
 
 ///////////////////////////////////////////////////////////////////
 Monster *Engine::createMonster(int monsterid)

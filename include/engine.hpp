@@ -74,6 +74,7 @@ private:
     Player *m_Player;
     std::vector< MapChunk*> m_Maps;
     MapChunk *m_CurrentMap;
+    bool walkInDir(Actor *tactor, int direction);
 
     //player actions
     void playerDeath();
