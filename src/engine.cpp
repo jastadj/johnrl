@@ -324,12 +324,15 @@ bool Engine::initMap()
     m_CurrentMap = NULL;
     for(int i = 0; i < int(m_Maps.size()); i++) delete m_Maps[i];
 
+    //note : the design of having global coordinates seem weak if not using them for global noise
+    //       generation.  Also, linking adjacent maps, yet having a maps list also seems like a very
+    //       bad idea.  Should redisg
+
     //create map data
     m_CurrentMap = new MapChunk(0,0);
     m_Maps.push_back(m_CurrentMap);
 
     MapChunk *newmap = new MapChunk(0,-1);
-    newmap->fillMap(1);
     m_Maps.push_back(newmap);
 
     m_CurrentMap->connectAdjacent(DIR_NORTH, newmap);
