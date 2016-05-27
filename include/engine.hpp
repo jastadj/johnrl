@@ -74,7 +74,7 @@ private:
     Player *m_Player;
     std::vector< MapChunk*> m_Maps;
     MapChunk *m_CurrentMap;
-    bool walkInDir(Actor *tactor, int direction);
+
 
     //player actions
     void playerDeath();
@@ -126,7 +126,7 @@ public:
     long getSeed() { return m_Seed;}
 
     void playerTurnUpdates();
-
+    bool walkInDir(Actor *tactor, int direction);
     int getMonsterDBSize() { return int(m_MonsterDB.size()); }
     Monster *createMonster(int monsterid);
 
@@ -134,7 +134,7 @@ public:
     Item *createItem(int itemid);
     bool moveItem(Item *titem, std::vector<Item*> *isource, std::vector<Item*> *idest);
 
-    bool validWalkableTile(int x, int y);
+    bool validWalkableTile(MapChunk *tmap, int x, int y);
     int getDirectionFromUser(sf::Vector2i *mcoord = NULL);
 
     sf::Vector2i getGlobalPosition() { return m_Player->getGlobalPos();}

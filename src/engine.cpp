@@ -328,6 +328,12 @@ bool Engine::initMap()
     m_CurrentMap = new MapChunk(0,0);
     m_Maps.push_back(m_CurrentMap);
 
+    MapChunk *newmap = new MapChunk(0,-1);
+    newmap->fillMap(1);
+    m_Maps.push_back(newmap);
+
+    m_CurrentMap->connectAdjacent(DIR_NORTH, newmap);
+
     return true;
 }
 
@@ -656,6 +662,10 @@ void Engine::drawStatus()
     std::stringstream phealth;
     phealth << "HP : " << m_Player->getCurrentHealth() << "/" << m_Player->getMaxHealth();
     drawString(50,4, phealth.str());
+
+    std::stringstream ppos;
+    ppos << "POS : " << m_Player->getPosition().x << "," << m_Player->getPosition().y;
+    drawString(50,5, ppos.str());
 
     //if player needs to drink
     if(m_Player->getHydrationLevel() <= 3)
@@ -1159,20 +1169,22 @@ MapTile *Engine::getMapTile(int tileid)
     return m_MapTiles[tileid];
 }
 
-bool Engine::validWalkableTile(int x, int y)
+bool Engine::validWalkableTile(MapChunk *tmap, int x, int y)
 {
+    if(tmap == NULL) return false;
+
     sf::Vector2i tpos(x,y);
 
     //check that tile is within map dimensions
-    sf::Vector2i mapdim = m_CurrentMap->getDimensions();
+    sf::Vector2i mapdim = tmap->getDimensions();
     if(x < 0 || y < 0 || x >= mapdim.x || y >= mapdim.y) return false;
 
     //check that tile is walkable
-    MapTile *ttile = getMapTile( m_CurrentMap->getTile(x,y) );
+    MapTile *ttile = getMapTile( tmap->getTile(x,y) );
     if(!ttile->isWalkable()) return false;
 
     //check that there are no actors there
-    std::vector<Monster*> *actors = m_CurrentMap->getMapMonsters();
+    std::vector<Monster*> *actors = tmap->getMapMonsters();
     for(int i = 0; i < int(actors->size()); i++)
     {
         if((*actors)[i]->getPosition() == tpos) return false;
@@ -1312,10 +1324,94 @@ bool Engine::walkInDir(Actor *tactor, int direction)
     }
 
     //check that newpos is a valid walkable tile
-    if(!validWalkableTile(newpos.x, newpos.y))
+    if(!validWalkableTile(m_CurrentMap, newpos.x, newpos.y))
     {
-        //need to come up with method to allow actors to walk off current map to adjacent map
-        return false;
+        //for now, only let player walk across maps
+        if(tactor->getType() != OBJ_PLAYER) return false;
+
+        sf::Vector2i adjacentpos = newpos;
+        MapChunk *tadjacent = NULL;
+        int adir = DIR_NONE;
+
+        //find adjacent direction
+        if(newpos.x < 0) adir = DIR_WEST;
+        else if(newpos.x >= m_CurrentMap->getDimensions().x) adir = DIR_EAST;
+        if(newpos.y < 0)
+        {
+            if(adir == DIR_WEST) adir = DIR_NW;
+            else if(adir == DIR_EAST) adir = DIR_NE;
+            else adir = DIR_NORTH;
+        }
+        else if(newpos.y >= m_CurrentMap->getDimensions().y)
+        {
+            if(adir == DIR_WEST) adir = DIR_SW;
+            else if(adir == DIR_EAST) adir = DIR_SE;
+            else adir = DIR_SOUTH;
+        }
+
+        //check if map in adjacent direction is valid
+        if(adir == DIR_NW)
+        {
+            if(m_CurrentMap->getAdjacent(DIR_NORTH) != NULL)
+            {
+                tadjacent = m_CurrentMap->getAdjacent(DIR_NORTH)->getAdjacent(DIR_WEST);
+            }
+            else if(m_CurrentMap->getAdjacent(DIR_WEST) != NULL)
+            {
+                tadjacent = m_CurrentMap->getAdjacent(DIR_WEST)->getAdjacent(DIR_NORTH);
+            }
+        }
+        else if(adir == DIR_NE)
+        {
+            if(m_CurrentMap->getAdjacent(DIR_NORTH) != NULL)
+            {
+                tadjacent = m_CurrentMap->getAdjacent(DIR_NORTH)->getAdjacent(DIR_EAST);
+            }
+            else if(m_CurrentMap->getAdjacent(DIR_EAST) != NULL)
+            {
+                tadjacent = m_CurrentMap->getAdjacent(DIR_EAST)->getAdjacent(DIR_NORTH);
+            }
+        }
+        else if(adir == DIR_SW)
+        {
+            if(m_CurrentMap->getAdjacent(DIR_SOUTH) != NULL)
+            {
+                tadjacent = m_CurrentMap->getAdjacent(DIR_SOUTH)->getAdjacent(DIR_WEST);
+            }
+            else if(m_CurrentMap->getAdjacent(DIR_WEST) != NULL)
+            {
+                tadjacent = m_CurrentMap->getAdjacent(DIR_WEST)->getAdjacent(DIR_SOUTH);
+            }
+        }
+        else if(adir == DIR_SE)
+        {
+            if(m_CurrentMap->getAdjacent(DIR_SOUTH) != NULL)
+            {
+                tadjacent = m_CurrentMap->getAdjacent(DIR_SOUTH)->getAdjacent(DIR_EAST);
+            }
+            else if(m_CurrentMap->getAdjacent(DIR_EAST) != NULL)
+            {
+                tadjacent = m_CurrentMap->getAdjacent(DIR_EAST)->getAdjacent(DIR_SOUTH);
+            }
+        }
+        else tadjacent = m_CurrentMap->getAdjacent(adir);
+
+        //if adjacent map is not valid
+        if(tadjacent == NULL) return false;
+
+        if(adir == DIR_WEST || adir == DIR_NW || adir == DIR_SW) adjacentpos.x += tadjacent->getDimensions().x;
+        if(adir == DIR_EAST || adir == DIR_NE || adir == DIR_SE) adjacentpos.x -= m_CurrentMap->getDimensions().x;
+        if(adir == DIR_NW || adir == DIR_NORTH || adir == DIR_NE) adjacentpos.y += tadjacent->getDimensions().y;
+        if(adir == DIR_SW || adir == DIR_SOUTH || adir == DIR_SE) adjacentpos.y -= m_CurrentMap->getDimensions().y;
+
+        //is adjacent position valid?
+        if(!validWalkableTile(tadjacent, adjacentpos.x, adjacentpos.y)) return false;
+
+        //change current map to adjacent map
+        m_CurrentMap = tadjacent;
+
+        //set actors position
+        newpos = adjacentpos;
     }
 
     //set new position

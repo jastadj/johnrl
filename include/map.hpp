@@ -39,8 +39,6 @@ private:
 
     //connected maps
     std::vector< MapChunk*> m_AdjacentMaps;
-    bool hasAdjacent(int direction);
-    bool connectAdjacent(int direction, MapChunk *tmap);
 
     int m_GlobalX;
     int m_GlobalY;
@@ -70,6 +68,9 @@ public:
     bool addMonster(int monsterid, int x, int y);
     bool addMonster(int monsterid, sf::Vector2i pos);
     std::vector< Monster*> *getMapMonsters() { return &m_MapMonsters;}
+
+    MapChunk *getAdjacent(int direction);
+    bool connectAdjacent(int direction, MapChunk *tmap);
 
     bool addItem(int itemid, int x, int y);
     bool addItem(int itemid, sf::Vector2i ipos);

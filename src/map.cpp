@@ -120,14 +120,13 @@ bool MapChunk::mapDataValid(int x, int y)
     return true;
 }
 
-bool MapChunk::hasAdjacent(int direction)
+MapChunk *MapChunk::getAdjacent(int direction)
 {
     //validate direction
-    if(direction < 0 || direction >= DIR_TOTAL) return false;
+    if(direction < 0 || direction >= DIR_TOTAL) return NULL;
 
-    //if an adjacent map has a pointer, return true
-    if(m_AdjacentMaps[direction] != NULL) return true;
-    else return false;
+    //return adjacent in direction
+    return m_AdjacentMaps[direction];
 }
 
 bool MapChunk::connectAdjacent(int direction, MapChunk *tmap)
