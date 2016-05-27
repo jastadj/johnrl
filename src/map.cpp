@@ -288,8 +288,13 @@ bool MapChunk::addItem(int itemid, int x, int y)
         return false;
     }
 
+    //create item
     Item *newitem = eptr->createItem(itemid);
 
+    //set item's position
+    newitem->setPosition(x, y);
+
+    //add item to the map
     m_MapItems.push_back(newitem);
 
     return true;

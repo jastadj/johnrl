@@ -294,6 +294,11 @@ bool Engine::initItems()
     newitem->m_TileID = int('*');
     m_ItemDB.push_back(newitem);
 
+    //item 2
+    newitem = new Portal;
+    newitem->m_Name = "stairs";
+    newitem->m_TileID = int('>');
+    m_ItemDB.push_back(newitem);
 
     //set all item ids as index position
     for(int i = 0; i < int(m_ItemDB.size()); i++)
@@ -336,6 +341,9 @@ bool Engine::initMap()
     m_Maps.push_back(newmap);
 
     m_CurrentMap->connectAdjacent(DIR_NORTH, newmap);
+
+    //test
+    m_CurrentMap->addItem(2, 130, 15);
 
     return true;
 }
